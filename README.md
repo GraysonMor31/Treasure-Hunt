@@ -10,6 +10,8 @@
 
 [Additional Resources](#Additional-Resources)
 
+[Progress](#Progress)
+
 ## Intro
 This is a simple strategy based game that includes elements of Chess and a Choose your Own Adventure RPG. The objective is simple be the first to find the treasure hidden on the map, but be warned there is more to it than just moving in straight lines. Think out your moves, predict other players moves, and use anything available to you to achieve victory. The game utilizes socket programming in Python to allow for multiplayer capabilities this includes playing with others, individual and game chats, and more. The game is played through a locally hosted web-page (Don't worry the code will handle all of that) with your mouse. 
 ## How-To
@@ -63,3 +65,12 @@ python3 client.py
   * [OS](https://docs.python.org/3/library/os.html)
 * Install Video
   * **Coming Soon**
+ 
+## Progress
+| Sprint | Status | Notes |
+|--------|--------|-------|
+| 0 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 |
+| 1 | :construction: | Sprint in Progress - Tasks to Go: X |
+| 2 | :calendar: | Spring Upcoming - Tasks Planned: X |
+| 3 | :calendar: | Spring Upcoming - Tasks Planned: X |
+| 4 | :calendar: | Spring Upcoming - Tasks Planned: X |
