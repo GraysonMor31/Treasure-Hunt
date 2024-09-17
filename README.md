@@ -1,4 +1,4 @@
-# CS457-Knights-Board-Game
+# Multiplayer Board Game
 
 **Intro:**
 
