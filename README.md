@@ -1,16 +1,8 @@
 # Treasure Hunt Board Game
 ## Table of Contents
-[Intro](#Intro)
-
-[How-To](#How-To)
-
-[Rules](#Rules)
-
-[Technologies Used](#Technologies-Used)
-
-[Additional Resources](#Additional-Resources)
-
-[Progress](#Progress)
+ 
+| [Intro](#Intro) | [How-To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Additional Resources](#Additional-Resources) | [Progress](#Progress) |
+|-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|
 
 ## Intro
 This is a simple strategy based game that includes elements of Chess and a Choose your Own Adventure RPG. The objective is simple be the first to find the treasure hidden on the map, but be warned there is more to it than just moving in straight lines. Think out your moves, predict other players moves, and use anything available to you to achieve victory. The game utilizes socket programming in Python to allow for multiplayer capabilities this includes playing with others, individual and game chats, and more. The game is played through a locally hosted web-page (Don't worry the code will handle all of that) with your mouse. 
