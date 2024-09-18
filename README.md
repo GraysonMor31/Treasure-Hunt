@@ -65,7 +65,7 @@ python3 client.py
   * [Flask](https://flask.palletsprojects.com/en/3.0.x/)
   * [OS](https://docs.python.org/3/library/os.html)
 * Other Docs
-  * [Statement of Work](https://https://github.com/GraysonMor31/Treasure-Hunt/Documentation/Statement-of-Work.pdf)
+  * [Statement of Work]([https://https://github.com/GraysonMor31/Treasure-Hunt/Documentation/Statement-of-Work.pdf](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Statement%20of%20Work.pdf))
 * Install Video
   * **Coming Soon**
  
