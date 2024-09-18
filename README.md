@@ -1,7 +1,7 @@
 # Treasure Hunt Board Game
 ## Table of Contents
  
-| [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Additional Resources](#Additional-Resources) | [Progress](#Progress) |
+| [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Progress](#Progress) | [Additional Resources](#Additional-Resources) |
 |-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|
 
 ## Intro
@@ -50,14 +50,6 @@ python3 client.py
 * Local Web Severs
 * Git
 
-## Additional Resources
-* Python Docs
-  * [Socket](https://docs.python.org/3/library/socket.html)
-  * [Flask](https://flask.palletsprojects.com/en/3.0.x/)
-  * [OS](https://docs.python.org/3/library/os.html)
-* Install Video
-  * **Coming Soon**
- 
 ## Progress
 | Sprint | Status | Notes |
 |--------|--------|-------|
@@ -66,3 +58,15 @@ python3 client.py
 | 2 | :calendar: | Spring Upcoming - Tasks Planned: X |
 | 3 | :calendar: | Spring Upcoming - Tasks Planned: X |
 | 4 | :calendar: | Spring Upcoming - Tasks Planned: X |
+
+## Additional Resources
+* Python Docs
+  * [Socket](https://docs.python.org/3/library/socket.html)
+  * [Flask](https://flask.palletsprojects.com/en/3.0.x/)
+  * [OS](https://docs.python.org/3/library/os.html)
+* Other Docs
+  * [Statement of Work](https://https://github.com/GraysonMor31/Treasure-Hunt/Documentation/Statement-of-Work.pdf)
+* Install Video
+  * **Coming Soon**
+ 
+
