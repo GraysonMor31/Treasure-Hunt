@@ -6,7 +6,7 @@ import logging
 import sys
 
 # Import custom libraries
-from gameserver import Message, GameState
+from gameserver import Message, GameState, GameLogic
 
 # Set up logging for debug, info, and error messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,6 +14,8 @@ log = logging.getLogger(__name__)
 
 # Create a selector object
 selector = selectors.DefaultSelector()
+game_state = GameState()
+game_logic = GameLogic()
 
 # Define a function to wrap the accept() method of the socket object
 def accept_wrapper(sock):
