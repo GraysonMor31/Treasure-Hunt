@@ -54,7 +54,7 @@ python3 client.py
 | Sprint | Status | Notes |
 |--------|--------|-------|
 | 0 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 |
-| 1 | :construction: | Sprint in Progress - Tasks to Go: X |
+| 1 | :construction: | Sprint in Progress - Tasks to Go: 2 |
 | 2 | :calendar: | Spring Upcoming - Tasks Planned: X |
 | 3 | :calendar: | Spring Upcoming - Tasks Planned: X |
 | 4 | :calendar: | Spring Upcoming - Tasks Planned: X |
@@ -68,6 +68,8 @@ python3 client.py
   * [Statement of Work](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Statement%20of%20Work.pdf)
 * Python Docs
   * [Socket](https://docs.python.org/3/library/socket.html)
+  * [Selectors](https://docs.python.org/3/library/selectors.html)
+  * [Sys](https://docs.python.org/3/library/sys.html)
   * [IP Address](https://docs.python.org/3/library/ipaddress.html)
   * [OS](https://docs.python.org/3/library/os.html)
   * [Unit Tests](https://docs.python.org/3/library/unittest.html)
