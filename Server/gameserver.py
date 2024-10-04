@@ -1,4 +1,3 @@
-# Import the necessary libraries
 import selectors
 import struct
 import json
@@ -95,6 +94,8 @@ class Message:
             self.process_protoheader()
             self.process_jsonheader()
             self.process_request()
+            if self.request and not self.response_created:
+                self.create_response()
         if mask & selectors.EVENT_WRITE:
             self.write()
     
@@ -140,6 +141,7 @@ class Message:
             )
             self.response_created = True
             self.send_buffer += message
+            log.debug(f"Response created and added to send_buffer: {response}")
             self.set_selector_events_mask("w")
         else:
             log.error("no request")
