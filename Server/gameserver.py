@@ -15,6 +15,17 @@ class Protocol:
     HEADER_LENGTH = 2
 
     def encode_message(content, content_type="text/json", encoding="utf-8"):
+        """
+        A method to encode a message to be sent over a socket
+
+        Args:
+            content (dict): The content to encode
+            content_type (str): The type of content to encode
+            encoding (str): The encoding to use for the content
+
+        Returns:
+            A bytes object containing the encoded message
+        """
         content_bytes = json.dumps(content, ensure_ascii=False).encode(encoding)
         jsonheader = {
             "byteorder": sys.byteorder,
@@ -28,11 +39,30 @@ class Protocol:
         return message
 
     def decode_header(data):
+        """
+        A method to decode the header of a message
+
+        Args:
+            data (bytes): The data to decode
+        
+        Returns:
+            A tuple containing the decoded header and the length of the header
+        """
         jsonheader_len = struct.unpack(">H", data[:Protocol.HEADER_LENGTH])[0]
         jsonheader = json.loads(data[Protocol.HEADER_LENGTH:Protocol.HEADER_LENGTH + jsonheader_len].decode("utf-8"))
         return jsonheader, Protocol.HEADER_LENGTH + jsonheader_len
 
     def decode_message(data, jsonheader):
+        """
+        A method to decode a message
+
+        Args:
+            data (bytes): The data to decode
+            jsonheader (dict): The header of the message
+
+        Returns:
+            The decoded message
+        """
         content_len = jsonheader["content-length"]
         content = json.loads(data[:content_len].decode(jsonheader["content-encoding"]))
         return content
@@ -50,6 +80,12 @@ class Message:
         self.response_created = False
 
     def set_selector_events_mask(self, mode):
+        """
+        Set the selector events mask for the socket 
+
+        Args:
+            mode (str): The mode to set the events mask to
+        """
         if mode == "r":
             events = selectors.EVENT_READ
         elif mode == "w":
@@ -61,8 +97,14 @@ class Message:
         self.selector.modify(self.sock, events, data=self)
 
     def read(self):
+        """
+        Read data from the socket into a 12KB buffer
+        
+        Args:
+            Message object
+        """
         try:
-            data = self.sock.recv(4096)
+            data = self.sock.recv(12288)
         except BlockingIOError:
             pass
         else:
@@ -72,6 +114,12 @@ class Message:
                 raise RuntimeError("Peer closed.")
 
     def write(self):
+        """
+        Write data to a buffer and send it to the socket
+        
+        Args:
+            Message object
+        """
         if self.send_buffer:
             log.info(f"sending {repr(self.send_buffer)} to {self.addr}")
             try:
@@ -84,6 +132,13 @@ class Message:
                     self.close()
 
     def process_events(self, mask):
+        """
+        Process events for the socket wether it is read or write
+
+        Args:
+            Message object
+            mask: The mask of events to process
+        """
         if mask & selectors.EVENT_READ:
             self.read()
             self.process_protoheader()
@@ -95,11 +150,23 @@ class Message:
             self.write()
 
     def process_protoheader(self):
+        """
+        Process the protocol header for the message
+        
+        Args:
+            Message object
+        """
         if len(self.recv_buffer) >= Protocol.HEADER_LENGTH:
             self.jsonheader, header_len = Protocol.decode_header(self.recv_buffer)
             self.recv_buffer = self.recv_buffer[header_len:]
 
     def process_jsonheader(self):
+        """
+        Process the JSON header for the message (only if it is a JSON message ie content-type is text/json)
+        
+        Args:
+            Message object
+        """
         if self.jsonheader:
             content_len = self.jsonheader["content-length"]
             if len(self.recv_buffer) >= content_len:
@@ -108,6 +175,12 @@ class Message:
                 log.info(f"received request {repr(self.request)} from {self.addr}")
 
     def process_request(self):
+        """
+        Process the request from the client, and decode it if it is a JSON message
+        
+        Args:
+            Message object
+        """
         if self.jsonheader is None:
             return
         content_len = self.jsonheader["content-length"]
@@ -123,6 +196,12 @@ class Message:
                 log.info(f"received {self.jsonheader['content-type']} request from {self.addr}")
 
     def create_response(self):
+        """
+        Create a response to the request based on the action and value in the request
+        
+        Args:
+            Message object
+        """
         if self.request:
             action = self.request.get("action")
             value = self.request.get("value")
@@ -139,6 +218,12 @@ class Message:
             log.error("no request")
 
     def close(self):
+        """
+        Close the connection to the socket and deregister it from the selector
+        
+        Args:
+            Message object
+        """
         log.info(f"closing connection to {self.addr}")
         try:
             self.selector.unregister(self.sock)
@@ -150,11 +235,32 @@ class Message:
 
 class GameState:
     def __init__(self):
+        """
+        Initialize the game state, setting the players to an empty list
+        
+        Args:
+            GameState object
+        """
         self.state = {"players": []}
 
     def add_player(self, player_name):
+        """
+        Add a player to the game state (array)
+
+        Args:
+            player_name (str): The name of the player to add to the game state
+        """
         self.state["players"].append(player_name)
         log.info(f"Added player {player_name}, new game state: {self.state}")
 
     def get_state(self):
+        """
+        Get the current game state
+        
+        Args:
+            GameState object
+
+        Returns:
+            dict: The current game state
+        """
         return self.state
