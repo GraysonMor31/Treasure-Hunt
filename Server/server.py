@@ -29,7 +29,7 @@ def accept_wrapper(sock):
         connection, address = sock.accept()
         log.info(f"Accepted connection from {address}")
         connection.setblocking(False)
-        message = gameserver.Message(selector, conn, addr, game_state)
+        message = Message(selector, connection, address, game_state)
         selector.register(connection, selectors.EVENT_READ, data=message)
     except Exception as e:
         log.error(f"Error accepting connection: {e}")
