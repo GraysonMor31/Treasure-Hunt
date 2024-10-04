@@ -7,31 +7,28 @@ import selectors
 import traceback
 import struct
 
-import libclient
+import gameclient
 
 sel = selectors.DefaultSelector()
 
 
 def create_request(action, value):
-    if action == "search":
+    if action == "add_player":
         return dict(
             type="text/json",
             encoding="utf-8",
             content=dict(action=action, value=value),
-        )
-    elif action in ["double", "negate"]:
-        packed_data = struct.pack(">6si", action.encode(), int(value))
-        return dict (
-            type="binary/custom-client-binary-type",
-            encoding="binary",
-            content=packed_data,
-        )
-    else:
+    )
+    elif action == "get_state":
         return dict(
-            type="binary/custom-client-binary-type",
-            encoding="binary",
-            content=bytes(action + value, encoding="utf-8"),
+            ype="text/json",
+            encoding="utf-8",
+            content=dict(action=action, value=value),
         )
+ 
+    else:
+       return "";
+   
 
 
 def start_connection(host, port, request):
@@ -41,7 +38,7 @@ def start_connection(host, port, request):
     sock.setblocking(False)
     sock.connect_ex(addr)
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
-    message = libclient.Message(sel, sock, addr, request)
+    message = gameclient.Message(sel, sock, addr, request)
     sel.register(sock, events, data=message)
 
 

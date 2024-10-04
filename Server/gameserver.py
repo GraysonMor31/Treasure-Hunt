@@ -245,7 +245,7 @@ class Message:
             message = self.create_message(**response)
             self.response_created = True
             self._send_buffer += message
-            self._set_selector_events_mask("w")
+            self.set_selector_events_mask("w")
         else:
             log.error("no request")
             
