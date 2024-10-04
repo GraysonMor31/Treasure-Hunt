@@ -6,7 +6,7 @@ import logging
 import sys
 
 # Import custom libraries
-from gameserver import Message, GameState, GameLogic
+from gameserver import Message, GameState
 
 # Set up logging for debug, info, and error messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -15,7 +15,6 @@ log = logging.getLogger(__name__)
 # Create a selector object
 selector = selectors.DefaultSelector()
 game_state = GameState()
-game_logic = GameLogic()
 
 # Define a function to wrap the accept() method of the socket object
 def accept_wrapper(sock):
@@ -59,7 +58,7 @@ def main():
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_socket.bind((host, port))
-    log.info(f"Listening on {host}:{port}")
+    log.info(f"Listening on {host}: {port}")
     listen_socket.listen()
     listen_socket.setblocking(False)
     selector.register(listen_socket, selectors.EVENT_READ, data=None)
