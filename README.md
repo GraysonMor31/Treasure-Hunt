@@ -1,7 +1,7 @@
 # Treasure Hunt Board Game
 
 <p align="center">
-  <img src="https://github.com/GraysonMor31/Treasure-Hunt/Images/Pirates.jpg" alt="Pirates finding treasure on a gameboard" />
+  <img src="https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Images/Pirates.jpg" alt="Pirates finding treasure on a gameboard">
 </p>
 
 
