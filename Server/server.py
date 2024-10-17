@@ -6,7 +6,7 @@ import logging
 import sys
 
 # Import custom libraries
-from gameserver import Message, GameState
+from game_server import Message, GameState
 
 # Set up logging for debug, info, and error messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -35,18 +35,18 @@ def accept_wrapper(sock):
         log.error(traceback.format_exc())
 
 def get_host():
-    host = input("Enter the host to listen on: ")
+    host = input("Enter the host to listen on (Default is 'localhost'): ")
     if not host:
-        log.error("Invalid hostname or IP address, assigning default host 'localhost'")
+        log.error("Invalid hostname or IP address, assigning default host")
         host = "localhost"
     return host
 
 def get_port():
-    port_input = input("Enter the port to listen on: ")
+    port_input = input("Enter the port to listen on (Default is 12345): ")
     try:
         port = int(port_input)
     except ValueError:
-        log.error("Invalid port number, assigning default port 12345")
+        log.error("Invalid port number, assigning default port")
         port = 12345
     return port
 
