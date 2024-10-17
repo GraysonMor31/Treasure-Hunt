@@ -12,7 +12,7 @@ body {
 h1 {
     font-size: 36pt;
     text-align: center;
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 .container {
@@ -27,7 +27,7 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
 }
 
 .game-board {
@@ -100,7 +100,7 @@ h1 {
 
 .leave_game {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .leave_game button {

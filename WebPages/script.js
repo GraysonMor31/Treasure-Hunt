@@ -13,3 +13,30 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    const addPlayerList = document.querySelector(".game-info pnth-of-type(1)");
+
+    const socket = new WebSocket("ws://localhost:8080");
+    socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        update_add_player_list(message);
+    }
+
+    function update_add_player_list(players) {
+        layerList.innerHTML = "Players: " + players.map(p => p.username).join(", ");
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const removePlayerList = document.querySelector(".game-info pnth-of-type(2)");
+
+    const socket = new WebSocket("ws://localhost:8080");
+    socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        update_remove_player_list(message);
+    }
+
+    function update_remove_player_list(players) {
+        removePlayerList.innerHTML = "Players: " + players.map(p => p.username).join(", ");
+    }
+});

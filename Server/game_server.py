@@ -7,6 +7,7 @@ import sys
 import logging
 
 from protocol import Protocol
+from game_state import GameState
 
 # Set up logging for debug, info, error, and critical messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -25,12 +26,6 @@ class Message:
         self.response_created = False
 
     def set_selector_events_mask(self, mode):
-        """
-        Set the selector events mask for the socket 
-
-        Args:
-            mode (str): The mode to set the events mask to
-        """
         if mode == "r":
             events = selectors.EVENT_READ
         elif mode == "w":
@@ -42,12 +37,6 @@ class Message:
         self.selector.modify(self.sock, events, data=self)
 
     def read(self):
-        """
-        Read data from the socket into a 12KB buffer
-        
-        Args:
-            Message object
-        """
         try:
             data = self.sock.recv(12288)
         except BlockingIOError:
@@ -59,12 +48,6 @@ class Message:
                 raise RuntimeError("Peer closed.")
 
     def write(self):
-        """
-        Write data to a buffer and send it to the socket
-        
-        Args:
-            Message object
-        """
         if self.send_buffer:
             log.info(f"sending {repr(self.send_buffer)} to {self.addr}")
             try:
@@ -77,13 +60,6 @@ class Message:
                     self.close()
 
     def process_events(self, mask):
-        """
-        Process events for the socket wether it is read or write
-
-        Args:
-            Message object
-            mask: The mask of events to process
-        """
         if mask & selectors.EVENT_READ:
             self.read()
             self.process_protoheader()
@@ -95,23 +71,11 @@ class Message:
             self.write()
 
     def process_protoheader(self):
-        """
-        Process the protocol header for the message
-        
-        Args:
-            Message object
-        """
         if len(self.recv_buffer) >= Protocol.HEADER_LENGTH:
             self.jsonheader, header_len = Protocol.decode_header(self.recv_buffer)
             self.recv_buffer = self.recv_buffer[header_len:]
 
     def process_jsonheader(self):
-        """
-        Process the JSON header for the message (only if it is a JSON message ie content-type is text/json)
-        
-        Args:
-            Message object
-        """
         if self.jsonheader:
             content_len = self.jsonheader["content-length"]
             if len(self.recv_buffer) >= content_len:
@@ -120,12 +84,6 @@ class Message:
                 log.info(f"received request {repr(self.request)} from {self.addr}")
 
     def process_request(self):
-        """
-        Process the request from the client, and decode it if it is a JSON message
-        
-        Args:
-            Message object
-        """
         if self.jsonheader is None:
             return
         content_len = self.jsonheader["content-length"]
@@ -141,57 +99,33 @@ class Message:
                 log.info(f"received {self.jsonheader['content-type']} request from {self.addr}")
 
     def create_response(self):
-        """
-        Create a response to the request based on the action and value in the request
-        
-        Args:
-            Message object
-        """
-        if self.request:
-            action = self.request.get("action")
-            if action == "add_player":
-                player_name = self.request.get("value")
-                self.game_state.add_player(player_name)
-                self.send_player_list()
-            elif action == "leave_game":
-                player_name = self.request.get("player_name")
-                self.game_state.remove_player(player_name)
-                self.send_player_list()
-            elif action == "send_chat":
-                message = self.request.get("value")
-                response = {"action": "send_chat", "value": message}
-                message = Protocol.encode_message(response)
-                self.send_buffer += message
-                self.set_selector_events_mask("w")
-            elif action == "get_state":
-                response = {"result": self.game_state.get_state()}
-                message = Protocol.encode_message(response)
-                self.send_buffer += message
-                self.set_selector_events_mask("w")
-            else:
-                log.error("Unknown action received")
-                response = {"error": "Unknown action"}
-                message = Protocol.encode_message(response)
-                self.send_buffer += message
-                self.set_selector_events_mask("w")
-            self.response_created = True
-        else:
-            log.error("No request")
+    `   # Once a player joins the game, send the player list to all players
+        if self.request["action"] == "join_game":
+            player_name = self.request["player_name"]
+            self.game_state.join_game(player_name)
+            self.send_player_list()
+        elif self.request["action"] == "leave_game":
+            player_name = self.request["player_name"]
+            self.game_state.leave_game(player_name)
+            self.send_player_list()
+        elif self.request["action"] == "send_chat":
+            chat_message = self.request["chat_message"]
+            self.game_state.send_chat(chat_message)
     
     def send_player_list(self):
-        clients = self.game_state.get_players()
-        update_message = {"action": "get_players", "clients": clients}
-        message = Protocol.encode_message(update_message)
-        self.send_buffer += message
-        self.set_selector_events_mask("w")
-
-    def close(self):
-        """
-        Close the connection to the socket and deregister it from the selector
+        current_players = self.game_state.get_players()
+        current_players_json = json.dumps({
+        "type": "text/json",
+        "encoding": "utf-8",
+        "content": current_players,  # player list goes here
+        "content-length": len(json.dumps(current_players)),  # length of serialized content
+        "action": "send_player_list"
+        })
         
-        Args:
-            Message object
-        """
+        response = Protocol.encode_message(current_players_json)
+        self.send_buffer += response
+        
+    def close(self):
         log.info(f"closing connection to {self.addr}")
         try:
             self.selector.unregister(self.sock)
@@ -200,50 +134,3 @@ class Message:
         finally:
             self.sock.close()
             self.sock = None
-
-class GameState:
-   
-   def __init__(self):
-       self.players = []
-       
-    def join_game(self, player_name):
-        """
-        Add a player to the game
-
-        Args:
-            player_name (str): The name of the player to add
-        """
-        self.players.append(player_name)
-        log.info(f"Player {player_name} joined the game")
-        
-    def leave_game(self, player_name):
-        """
-        Remove a player from the game dynamically
-        
-        Args:
-            player_name (str): The name of the player to remove
-        """
-        self.players.remove(player_name)
-        log.info(f"Player {player_name} left the game")
-        
-    def send_chat(self):
-        """
-        Send a chat message to all players in the game
-        """
-        
-    def move_player(self, direction):
-        """
-        Move a player in the game
-        
-        Args:
-            direction (str): The direction to move the player
-        """
-        
-    def get_players(self):
-        """
-        Get a list of all players in the game
-        
-        Returns:
-            A list of player names
-        """
-        return self.players 
