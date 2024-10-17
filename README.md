@@ -1,4 +1,10 @@
 # Treasure Hunt Board Game
+
+<p align="center">
+  <img src="https://github.com/GraysonMor31/Treasure-Hunt/Images/Pirates.jpg" alt="Pirates finding treasure on a gameboard" />
+</p>
+
+
 ## Table of Contents
  
 | [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Progress](#Progress) | [Additional Resources](#Additional-Resources) | [Documentation](#Documentation) |
