@@ -204,18 +204,35 @@ class Message:
         """
         if self.request:
             action = self.request.get("action")
-            value = self.request.get("value")
             if action == "add_player":
-                self.game_state.add_player(value)
-                response = {"result": "player added"}
+                player_name = self.request.get("value")
+                self.game_state.add_player(player_name)
+                self.send_player_list()
+            elif action == "leave_game":
+                player_name = self.request.get("player_name")
+                self.game_state.remove_player(player_name)
+                self.send_player_list()
             elif action == "get_state":
                 response = {"result": self.game_state.get_state()}
-            message = Protocol.encode_message(response)
+                message = Protocol.encode_message(response)
+                self.send_buffer += message
+                self.set_selector_events_mask("w")
+            else:
+                log.error("Unknown action received")
+                response = {"error": "Unknown action"}
+                message = Protocol.encode_message(response)
+                self.send_buffer += message
+                self.set_selector_events_mask("w")
             self.response_created = True
-            self.send_buffer += message
-            self.set_selector_events_mask("w")
         else:
-            log.error("no request")
+            log.error("No request")
+    
+    def send_player_list(self):
+        clients = self.game_state.get_players()
+        update_message = {"action": "update_clients", "clients": clients}
+        message = Protocol.encode_message(update_message)
+        self.send_buffer += message
+        self.set_selector_events_mask("w")
 
     def close(self):
         """
@@ -234,6 +251,7 @@ class Message:
             self.sock = None
 
 class GameState:
+    '''
     def __init__(self):
         """
         Initialize the game state, setting the players to an empty list
@@ -264,3 +282,21 @@ class GameState:
             dict: The current game state
         """
         return self.state
+        '''
+    def __init__(self):
+        self.players = []
+
+    def add_player(self, player_name):
+        self.players.append(player_name)
+        log.info(f"Added player {player_name}, new game state: {self.get_state()}")
+
+    def remove_player(self, player_name):
+        if player_name in self.players:
+            self.players.remove(player_name)
+            log.info(f"Removed player {player_name}, new game state: {self.get_state()}")
+
+    def get_players(self):
+        return self.players
+
+    def get_state(self):
+        return {"players": self.players}

@@ -5,6 +5,7 @@ import selectors
 import traceback
 import logging
 import struct
+import json
 
 # Import custom libraries
 from gameclient import Message
@@ -16,6 +17,8 @@ log = logging.getLogger(__name__)
 # crate an objet to manage socket connections
 sel = selectors.DefaultSelector()
 
+# List to maintain connected clients and game data
+connected_clients = []
 
 # create a request dictionary based on the action 
 def create_request(action, value):
@@ -25,6 +28,13 @@ def create_request(action, value):
             type="text/json", # specify the request type
             encoding="utf-8", # specify the encoding 
             content=dict(action=action, value=value),
+    )
+    elif action == "leave_game":
+        log.info(f"Player leaving: {value}")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action="leave_game", player_name=value),
     )
     elif action == "get_state":
         log.info("Getting game state")
@@ -36,8 +46,22 @@ def create_request(action, value):
     else:
         # error if the action is unknown 
        raise ValueError(f"Unknown action: {action}")
+    
+# Handle server response to update the list of clients
+def handle_update(data):
+    global connected_clients
+    action = data.get('action')
+    
+    if action == 'update_clients':
+        connected_clients = data.get('clients', [])
+        log.info(f"Updated client list: {connected_clients}")
+    
+    elif action == 'player_joined':
+        log.info(f"Player joined: {data.get('player_name')}")
+    
+    elif action == 'player_left':
+        log.info(f"Player left: {data.get('player_name')}")
    
-
 # establish a non-blocking connection to the server 
 def start_connection(host, port, request):
     addr = (host, port)
@@ -85,6 +109,8 @@ def main():
                 break
     except KeyboardInterrupt:
         log.info("Caught keyboard interrupt, exiting")
+        leave_request = create_request("leave_game", value)
+        start_connection(host, port, leave_request)
     finally:
         sel.close() # close the selector to release resources 
 
