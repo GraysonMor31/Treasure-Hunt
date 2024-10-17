@@ -6,6 +6,8 @@ import io
 import sys
 import logging
 
+from protocol import Protocol
+
 # Set up logging for debug, info, error, and critical messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
@@ -14,6 +16,7 @@ log = logging.getLogger(__name__)
 class Protocol:
     HEADER_LENGTH = 2
 
+    @staticmethod
     def encode_message(content, content_type="text/json", encoding="utf-8"):
         """
         A method to encode a message to be sent over a socket
@@ -38,6 +41,7 @@ class Protocol:
         message = message_hdr + jsonheader_bytes + content_bytes
         return message
 
+    @staticmethod
     def decode_header(data):
         """
         A method to decode the header of a message
@@ -52,6 +56,7 @@ class Protocol:
         jsonheader = json.loads(data[Protocol.HEADER_LENGTH:Protocol.HEADER_LENGTH + jsonheader_len].decode("utf-8"))
         return jsonheader, Protocol.HEADER_LENGTH + jsonheader_len
 
+    @staticmethod
     def decode_message(data, jsonheader):
         """
         A method to decode a message
@@ -212,6 +217,12 @@ class Message:
                 player_name = self.request.get("player_name")
                 self.game_state.remove_player(player_name)
                 self.send_player_list()
+            elif action == "send_chat":
+                message = self.request.get("value")
+                response = {"action": "send_chat", "value": message}
+                message = Protocol.encode_message(response)
+                self.send_buffer += message
+                self.set_selector_events_mask("w")
             elif action == "get_state":
                 response = {"result": self.game_state.get_state()}
                 message = Protocol.encode_message(response)
@@ -229,7 +240,7 @@ class Message:
     
     def send_player_list(self):
         clients = self.game_state.get_players()
-        update_message = {"action": "update_clients", "clients": clients}
+        update_message = {"action": "get_players", "clients": clients}
         message = Protocol.encode_message(update_message)
         self.send_buffer += message
         self.set_selector_events_mask("w")
@@ -251,52 +262,52 @@ class Message:
             self.sock = None
 
 class GameState:
-    '''
-    def __init__(self):
+   
+   def __init__(self):
+       self.players = []
+       
+    def join_game(self, player_name):
         """
-        Initialize the game state, setting the players to an empty list
-        
-        Args:
-            GameState object
-        """
-        self.state = {"players": []}
-
-    def add_player(self, player_name):
-        """
-        Add a player to the game state (array)
+        Add a player to the game
 
         Args:
-            player_name (str): The name of the player to add to the game state
+            player_name (str): The name of the player to add
         """
-        self.state["players"].append(player_name)
-        log.info(f"Added player {player_name}, new game state: {self.state}")
-
-    def get_state(self):
-        """
-        Get the current game state
-        
-        Args:
-            GameState object
-
-        Returns:
-            dict: The current game state
-        """
-        return self.state
-        '''
-    def __init__(self):
-        self.players = []
-
-    def add_player(self, player_name):
         self.players.append(player_name)
-        log.info(f"Added player {player_name}, new game state: {self.get_state()}")
-
-    def remove_player(self, player_name):
-        if player_name in self.players:
-            self.players.remove(player_name)
-            log.info(f"Removed player {player_name}, new game state: {self.get_state()}")
-
+        log.info(f"Player {player_name} joined the game")
+        
+    def leave_game(self, player_name):
+        """
+        Remove a player from the game dynamically
+        
+        Args:
+            player_name (str): The name of the player to remove
+        """
+        self.players.remove(player_name)
+        log.info(f"Player {player_name} left the game")
+        
+    def send_chat(self):
+        """
+        Send a chat message to all players in the game
+        """
+        
+    def move_player(self, direction):
+        """
+        Move a player in the game
+        
+        Args:
+            direction (str): The direction to move the player
+        """
+        
     def get_players(self):
+        """
+        Get a list of all players in the game
+        
+        Returns:
+            A list of player names
+        """
         return self.players
-
-    def get_state(self):
-        return {"players": self.players}
+    
+        
+        
+        

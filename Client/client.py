@@ -12,8 +12,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler, SimpleHTTPRequestHan
 from urllib.parse import urlparse, parse_qs
 
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Server'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'WebPages'))
+server = sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Server'))
+html = sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'WebPages', 'index.html'))
 
 # Import custom libraries
 from game_client import Message
@@ -40,14 +40,30 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         if self.path == "/":
             self.serve_index()
-        elif action == "add_player":
+        elif action == "join_game":
             response = self.add_player(value)
         elif action == "send_chat":
             response = self.send_chat(value)
         elif action == "leave_game":
             response = self.leave_game(value)
-        elif action == "get_game_state":
-            response = self.get_game_state()
+        elif action == "up":
+            response = self.up()
+        elif action == "down":
+            response = self.down()
+        elif action == "left":
+            response = self.left()
+        elif action == "right":
+            response = self.right()
+        elif action == "diag_up_left":
+            response = self.diag_up_left()
+        elif action == "diag_up_right":
+            response = self.diag_up_right()
+        elif action == "diag_down_left":
+            response = self.diag_down_left()
+        elif action == "diag_down_right":
+            response = self.diag_down_right()
+        elif action == "get_players":
+            response = self.get_players()
         else:
             response = {"error": "Unknown action"}
 
@@ -60,10 +76,10 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
-        with open(os.path.join(os.path.dirname(__file__), '..', 'WebPages', 'index.html'), 'rb') as file:
+        with open(html, 'rb') as file:
             self.wfile.write(file.read())
 
-    def add_player(self, player_name):
+    def join(self, player_name):
         if player_name:
             game_state.add_player(player_name)
             return {"status": "Player added", "player_name": player_name}
@@ -81,24 +97,40 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             return {"status": "Player left", "player_name": player_name}
         return {"error": "Player name is required"}
 
-    def get_game_state(self):
-        return game_state.get_state()
-
-def start_http_server():
-    server_address = ('', 8000)
-    httpd = HTTPServer(server_address, GameHTTPRequestHandler)
-    log.info(f"Starting HTTP server on port 8000")
-    httpd.serve_forever()
+    def up(self):
+        game_state.move_player("up")
+        return {"status": "Player moved up"}
+        
+    def down(self):
+        game_state.move_player("down")
+        return {"status": "Player moved down"}
+    
+    def left(self):
+        game_state.move_player("left")
+        return {"status": "Player moved left"}
+    
+    def right(self):
+        game_state.move_player("right")
+        return {"status": "Player moved right"}
+    
+    def diag_up_left(self):
+        game_state.move_player("diag_up_left")
+        return {"status": "Player moved diagonally up and left"}
+    
+    def diag_up_right(self):
+        game_state.move_player("diag_up_right")
+        return {"status": "Player moved diagonally up and right"}
+    
+    def diag_down_left(self):
+        game_state.move_player("diag_down_left")
+        return {"status": "Player moved diagonally down and left"}
+    
+    def diag_down_right(self):
+        game_state.move_player("diag_down_right")
+        return {"status": "Player moved diagonally down and right"}
 
 def create_request(action, value):
-    if action == "add_player":
-        log.info(f"Adding player with name {value}")
-        return dict(
-            type="text/json", # specify the request type
-            encoding="utf-8", # specify the encoding 
-            content=dict(action=action, value=value),
-    )
-    elif action == "leave_game":
+    if action == "leave_game":
         log.info(f"Player leaving: {value}")
         return dict(
             type="text/json",
@@ -112,13 +144,69 @@ def create_request(action, value):
             encoding="utf-8",
             content=dict(action=action, value=value),
     )
-    elif action == "get_game_state":
-        log.info("Getting game state")
+    elif action == "up":
+        log.info(f"Moving player up")
         return dict(
             type="text/json",
             encoding="utf-8",
-            content=dict(action=action, value=value), # content with action and value
-        )
+            content=dict(action=action),
+    )
+    elif action == "down":
+        log.info(f"Moving player down")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "left":
+        log.info(f"Moving player left")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "right":
+        log.info(f"Moving player right")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "diag_up_left":
+        log.info(f"Moving player diagonally up and left")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "diag_up_right":
+        log.info(f"Moving player diagonally up and right")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "diag_down_left":
+        log.info(f"Moving player diagonally down and left")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "diag_down_right":
+        log.info(f"Moving player diagonally down and right")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
+    elif action == "get_players":
+        log.info(f"Getting players")
+        return dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action=action),
+    )
     else:
         # error if the action is unknown 
        raise ValueError(f"Unknown action: {action}")
@@ -165,7 +253,7 @@ def main():
     http_server_thread.start()
     
     # Open the web page in the default web browser
-    webbrowser.open('http://localhost:8000')
+    webbrowser.open('http://localhost:8080')
     
     # Start a persistent connection to the server to do the set actions
     start_connection(host, port, None)
@@ -177,19 +265,26 @@ def main():
             message = key.data
             break
     
-    if message is None:
-        log.error("Failed to initialize the message object")
-        sys.exit(1)
-    
     # Ask user for inputs to perform actions
     try:
         while True:
             action = input("Enter an action: ")
             value = input("Enter a value: ")
-            request = create_request(action, value)
-            message.request = request
+            username = input("Enter your username: ")
             
-            events = sel.select(timeout=1)
+            # If a player leaves break the loop and ternimate the connection otherwise create a request
+            if action != "leave_game":
+                request = create_request(action, value)
+                message.request = request
+            elif action == "leave_game":
+                request = create_request(action, value)
+                message.request = request
+                break
+            else:
+                log.error("Unknown action")
+            
+            # Wait for events to occur timeout is set to 5 seconds (this may need to be adjusted)
+            events = sel.select(timeout=5)
             for key, mask in events:
                 message = key.data
                 try:
@@ -198,8 +293,11 @@ def main():
                     log.error(f"Error processing events: {e}")
                     log.error(traceback.format_exc())
                     
+            # Close the connection if player leaves the game                    
             if not sel.get_map():
                 break
+    
+    # Handle keyboard interrupt and close the selector
     except KeyboardInterrupt:
         log.info("Caught keyboard interrupt, exiting")
     finally:

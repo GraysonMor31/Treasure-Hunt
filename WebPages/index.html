@@ -3,99 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Treasure Hunt Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group button {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .form-group button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .form-group button:hover {
-            background-color: #0056b3;
-        }
-        .response {
-            margin-top: 20px;
-            white-space: pre-wrap;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
-    <script>
-        function sendRequest(action, value) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:8000?action=${action}&value=${value}`, true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    document.getElementById("response").innerText = JSON.stringify(response, null, 2);
-                }
-            };
-            xhr.send();
-        }
-
-        function addPlayer() {
-            const playerName = document.getElementById("playerName").value;
-            sendRequest("add_player", playerName);
-        }
-
-        function sendChat() {
-            const chatMessage = document.getElementById("chatMessage").value;
-            sendRequest("send_chat", chatMessage);
-        }
-
-        function leaveGame() {
-            const playerName = document.getElementById("playerName").value;
-            sendRequest("leave_game", playerName);
-        }
-
-        function getGameState() {
-            sendRequest("get_game_state", "");
-        }
-    </script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
 </head>
 <body>
+    <h1>Treasure Hunt Game</h1>
     <div class="container">
-        <h1>Treasure Hunt Game</h1>
-        <div class="form-group">
-            <label for="playerName">Player Name:</label>
-            <input type="text" id="playerName">
-            <button onclick="addPlayer()">Add Player</button>
-            <button onclick="leaveGame()">Leave Game</button>
+        <div class="left-panel">
+            <div class="game-board">
+                <table>
+                    <tbody>
+                        <!--JS Will Populate a table here-->
+                    </tbody>
+                </table>
+            </div>
+            <div class="game-controls">
+                <button onclick="up()">⬆️</button>
+                <button onclick="down()">⬇️</button>
+                <button onclick="left()">⬅️</button>
+                <button onclick="right()">➡️</button>
+                <button onclick="DiagUpLeft()">↖️</button>
+                <button onclick="DiagUpRight()">↗️</button>
+                <button onclick="DiagDownLeft()">↙️</button>
+                <button onclick="DiagDownRight()">↘️</button>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="chatMessage">Chat Message:</label>
-            <input type="text" id="chatMessage">
-            <button onclick="sendChat()">Send Chat</button>
+        <div class="right-panel">
+            <div class="game-info">
+                <h2>Game Info</h2>
+                <p>Players: </p>
+                <p>Turn: </p>
+                <p>Winner: </p>
+            </div>
+            <div class="chat-box">
+                <h2>Chat Box</h2>
+                <div class="chat-messages">
+                    <!--JS Will Populate Chat Messages Here-->
+                </div>
+                <input type="text" id="chat-input" placeholder="Enter your message here">
+                <button onclick="sendMessage()">Send</button>
+            </div>
         </div>
-        <div class="form-group">
-            <button onclick="getGameState()">Get Game State</button>
-        </div>
-        <div id="response" class="response"></div>
+    </div>
+    <div class="leave_game">
+        <button onclick="leaveGame()">Leave Game</button>
     </div>
 </body>
 </html>
