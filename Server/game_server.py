@@ -246,8 +246,4 @@ class GameState:
         Returns:
             A list of player names
         """
-        return self.players
-    
-        
-        
-        
+        return self.players 
