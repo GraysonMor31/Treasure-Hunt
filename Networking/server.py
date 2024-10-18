@@ -16,8 +16,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Web'))
 # Import custom modules
 from game_server import Message
 from game_state import GameState
+from web_server import MyRequestHandler
 from protocol import Protocol
-from webserver import MyRequestHandler
 
 # Set up logging for debug, info, and error messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
