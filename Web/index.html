@@ -181,20 +181,6 @@
             }
             tbody.appendChild(tr);
         }
-
-        const players = document.querySelector(".game-info p:nth-of-type(1)");
-
-        function updatePlayers(playerList) {
-            players.textContent = `Players: ${playerList.join(", ")}`;
-        }
-
-        function fetchPlayers() {
-            fetch("/?action=get_players")
-                .then(response => response.json())
-                .then(data => updatePlayers(data));
-        }
-        fetchPlayers();
-        setInterval(fetchPlayers, 5000);
     });
     </script>
 </html>

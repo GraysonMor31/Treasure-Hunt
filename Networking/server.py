@@ -56,19 +56,12 @@ def get_port():
     return port
 
 def create_web_server():
-    PORT = 8085
+    web_port = 8085
     handler = MyRequestHandler
 
-    with socketserver.TCPServer(("", PORT), handler) as httpd:
-        log.info(f"Serving on port {PORT}")
+    with socketserver.TCPServer(("", web_port), handler) as httpd:
+        log.info(f"Serving on port {web_port}")
         httpd.serve_forever()
-        
-def serve_index_page():
-    self.senf_response(200)
-    self.send_header("Content-type", "text/html")
-    self.end_headers()
-    with open(os.path.join(os.path.dirname(__file__), '..', 'Web', 'index.html'), 'rb') as file:
-        return file.read()
 
 def main():
     # Get the host and port from user input

@@ -14,34 +14,33 @@ class Message:
         self.connection = connection
         self.address = address
         self.game_state = game_state
-        self.data = b''
-        self.outb = b''
+        self.recv_buffer = b'' 
+        self.send_buffer = b''  
         self.jsonheader = None
         self.response = None
         
     def process_events(self, mask):
-        if mode == "r":
+        if mask == "r":
             events = selectors.EVENT_READ
-        elif mode == "w":
+        elif mask == "w":
             events = selectors.EVENT_WRITE
-        elif mode == "rw":
+        elif mask == "rw":
             events = selectors.EVENT_READ | selectors.EVENT_WRITE
         else:
-            raise ValueError(f"Invalid events mask mode {repr(mode)}.")
+            raise ValueError(f"Invalid events mask mode {repr(mask)}.")
         self.selector.modify(self.sock, events, data=self)
         
     def read(self):
         try:
             data = self.connection.recv(6144)
-        except BlockingIOError:
-            pass
-        else:
             if data:
-                self.data += data
+                self.recv_buffer += data
+                self.process_header()  # Process headers after receiving data
             else:
                 log.info(f"Closing connection to {self.address}")
-                self.selector.unregister(self.connection)
-                self.connection.close()
+                self.close()
+        except BlockingIOError:
+            pass
                 
     def write(self):
         if self.send_buffer:
@@ -83,9 +82,11 @@ class Message:
             action = self.request.get("action")
             
             if action == "join":
-                self.response = self.game_state.(self.request)
+                self.response = self.game_state.add_player(self.request)
             elif action == "leave":
-                self.response = self.game_state.(self.request) 
+                self.response = self.game_state.remove_player(self.request)
+            else:
+                raise ValueError(f"Invalid action {action}") 
         
     def close(self):
         log.info("Closing connection to {self.address}")
