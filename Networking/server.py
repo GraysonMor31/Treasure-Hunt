@@ -56,7 +56,7 @@ def get_port():
     return port
 
 def create_web_server():
-    web_port = 8085
+    web_port = 3001
     handler = MyRequestHandler
 
     with socketserver.TCPServer(("", web_port), handler) as httpd:
