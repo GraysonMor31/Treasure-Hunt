@@ -3,10 +3,12 @@ import socket
 import selectors
 import traceback
 import logging
+import http.server
 import threading
+import os
 import sys
 
-# Add the parent directory to the path
+# Add the parent directory to the path to get other modules
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Game'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Web'))
