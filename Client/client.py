@@ -1,4 +1,5 @@
 import sys
+import os
 import socket
 import selectors
 import traceback
@@ -8,12 +9,12 @@ import json
 import threading
 import webbrowser
 import http.server
-from http.server import HTTPServer, BaseHTTPRequestHandler, SimpleHTTPRequestHandler, ThreadingHTTPServer, CGIHTTPRequestHandler
+from http.server import HTTPServer, BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
-import os
-server = sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Server'))
-html = sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'WebPages', 'index.html'))
+# Add the path to the custom libraries to the system path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Server'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'WebPages'))
 
 # Import custom libraries
 from game_client import Message
@@ -38,7 +39,7 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         action = query.get('action', [None])[0]
         value = query.get('value', [None])[0]
 
-        if self.path == "/":
+        if self.path == "/" or self.path == "/index.html":
             self.serve_index()
         elif action == "join_game":
             response = self.add_player(value)
@@ -46,22 +47,6 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             response = self.send_chat(value)
         elif action == "leave_game":
             response = self.leave_game(value)
-        elif action == "up":
-            response = self.up()
-        elif action == "down":
-            response = self.down()
-        elif action == "left":
-            response = self.left()
-        elif action == "right":
-            response = self.right()
-        elif action == "diag_up_left":
-            response = self.diag_up_left()
-        elif action == "diag_up_right":
-            response = self.diag_up_right()
-        elif action == "diag_down_left":
-            response = self.diag_down_left()
-        elif action == "diag_down_right":
-            response = self.diag_down_right()
         elif action == "get_players":
             response = self.get_players()
         else:
@@ -76,7 +61,7 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
-        with open(html, 'rb') as file:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'WebPages', 'index.html'), 'rb') as file:
             self.wfile.write(file.read())
 
     def join(self, player_name):
@@ -97,38 +82,6 @@ class GameHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             return {"status": "Player left", "player_name": player_name}
         return {"error": "Player name is required"}
 
-    def up(self):
-        game_state.move_player("up")
-        return {"status": "Player moved up"}
-        
-    def down(self):
-        game_state.move_player("down")
-        return {"status": "Player moved down"}
-    
-    def left(self):
-        game_state.move_player("left")
-        return {"status": "Player moved left"}
-    
-    def right(self):
-        game_state.move_player("right")
-        return {"status": "Player moved right"}
-    
-    def diag_up_left(self):
-        game_state.move_player("diag_up_left")
-        return {"status": "Player moved diagonally up and left"}
-    
-    def diag_up_right(self):
-        game_state.move_player("diag_up_right")
-        return {"status": "Player moved diagonally up and right"}
-    
-    def diag_down_left(self):
-        game_state.move_player("diag_down_left")
-        return {"status": "Player moved diagonally down and left"}
-    
-    def diag_down_right(self):
-        game_state.move_player("diag_down_right")
-        return {"status": "Player moved diagonally down and right"}
-
 def create_request(action, value):
     if action == "leave_game":
         log.info(f"Player leaving: {value}")
@@ -143,62 +96,6 @@ def create_request(action, value):
             type="text/json",
             encoding="utf-8",
             content=dict(action=action, value=value),
-    )
-    elif action == "up":
-        log.info(f"Moving player up")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "down":
-        log.info(f"Moving player down")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "left":
-        log.info(f"Moving player left")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "right":
-        log.info(f"Moving player right")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "diag_up_left":
-        log.info(f"Moving player diagonally up and left")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "diag_up_right":
-        log.info(f"Moving player diagonally up and right")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "diag_down_left":
-        log.info(f"Moving player diagonally down and left")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
-    )
-    elif action == "diag_down_right":
-        log.info(f"Moving player diagonally down and right")
-        return dict(
-            type="text/json",
-            encoding="utf-8",
-            content=dict(action=action),
     )
     elif action == "get_players":
         log.info(f"Getting players")
@@ -224,6 +121,12 @@ def handle_update(data):
     
     elif action == 'player_left':
         log.info(f"Player left: {data.get('player_name')}")
+        
+def start_http_server():
+    log.info("Starting HTTP server")
+    server_address = ('', 8080)
+    httpd = ThreadingHTTPServer(server_address, GameHTTPRequestHandler)
+    httpd.serve_forever()
 
 def start_connection(host, port, request):
     addr = (host, port)
@@ -239,13 +142,13 @@ def start_connection(host, port, request):
 
 def main():
     # Check if the correct number of command-line arguments is provided 
-    if len(sys.argv) != 3:
-        log.error("Usage: python client.py <host> <port>")
+    if len(sys.argv) != 4:
+        log.error("Usage: python client.py <host> <port> <username>")
         sys.exit(1) # Exit if the usage is incorrect 
 
     # Extract command-line arguments 
-    host, port = sys.argv[1], int(sys.argv[2])
-    log.info(f"Connecting to {host}: {port}")
+    host, port, username = sys.argv[1], int(sys.argv[2]), sys.argv[3]
+    log.info(f"Connecting to {host}: {port} as {username}")
     
     # Start the HTTP server in a separate thread
     http_server_thread = threading.Thread(target=start_http_server)
@@ -270,7 +173,6 @@ def main():
         while True:
             action = input("Enter an action: ")
             value = input("Enter a value: ")
-            username = input("Enter your username: ")
             
             # If a player leaves break the loop and ternimate the connection otherwise create a request
             if action != "leave_game":

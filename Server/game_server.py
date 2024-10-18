@@ -99,7 +99,7 @@ class Message:
                 log.info(f"received {self.jsonheader['content-type']} request from {self.addr}")
 
     def create_response(self):
-    `   # Once a player joins the game, send the player list to all players
+        # Once a player joins the game, send the player list to all players
         if self.request["action"] == "join_game":
             player_name = self.request["player_name"]
             self.game_state.join_game(player_name)
