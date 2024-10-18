@@ -104,26 +104,18 @@ class Message:
             player_name = self.request["player_name"]
             self.game_state.join_game(player_name)
             self.send_player_list()
-        elif self.request["action"] == "leave_game":
-            player_name = self.request["player_name"]
-            self.game_state.leave_game(player_name)
-            self.send_player_list()
-        elif self.request["action"] == "send_chat":
-            chat_message = self.request["chat_message"]
-            self.game_state.send_chat(chat_message)
+        self.response_created = True
     
     def send_player_list(self):
         current_players = self.game_state.get_players()
-        current_players_json = json.dumps({
-        "type": "text/json",
-        "encoding": "utf-8",
-        "content": current_players,  # player list goes here
-        "content-length": len(json.dumps(current_players)),  # length of serialized content
-        "action": "send_player_list"
-        })
+        current_players_json = {"type": "text/json", 
+                                "encoding": "utf-8",
+                                "content": {"players": current_players},
+        }
         
         response = Protocol.encode_message(current_players_json)
         self.send_buffer += response
+        self.set_selector_events_mask("rw")
         
     def close(self):
         log.info(f"closing connection to {self.addr}")

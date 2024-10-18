@@ -244,3 +244,12 @@ class Message:
             self._process_response_binary_content()
         # Close when response has been processed
         self.close()
+        
+    def update_players_list(self, players):
+        fetch('/?action=get_players', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({players: players}),
+        })
