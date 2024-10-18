@@ -60,21 +60,35 @@ def create_web_server():
     with socketserver.TCPServer(("", PORT), handler) as httpd:
         log.info(f"Serving on port {PORT}")
         httpd.serve_forever()
+        
+def serve_index_page():
+    self.senf_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
+    with open(os.path.join(os.path.dirname(__file__), '..', 'Web', 'index.html'), 'rb') as file:
+        return file.read()
 
 def main():
     # Get the host and port from user input
     host = get_host()
     port = get_port()
+    
+    # Start a thread for the web server
+    web_server_thread = threading.Thread(target=create_web_server, daemon=True)
+    web_server_thread.start()
 
+    # Create a socket object and bind it to the host and port
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_socket.bind((host, port))
+    
+    # Don't block on the socket, to listen for multiple incoming connections
     log.info(f"Listening on {host}: {port}")
     listen_socket.listen()
     listen_socket.setblocking(False)
     selector.register(listen_socket, selectors.EVENT_READ, data=None)
 
-    # Main event loop
+    # Main event loop to listen for incoming connections continuously, only exit on keyboard interrupt
     try:
         while True:
             events = selector.select(timeout=None)

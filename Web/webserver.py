@@ -38,11 +38,3 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps(response).encode('utf-8'))
-
-# Set up the server
-PORT = 8085
-handler = MyRequestHandler
-
-with socketserver.TCPServer(("", PORT), handler) as httpd:
-    log.info(f"Serving on port {PORT}")
-    httpd.serve_forever()
