@@ -29,11 +29,11 @@ git clone https://github.com/GraysonMor31/Treasure-Hunt.git
 ### Run
 1. Start the server
 ```bash
-python3 server.py
+python3 server.py <host> <port>
 ```
 2. Start each client
 ```bash
-python3 client.py
+python3 client.py <host> <port> <username>
 ```
 3. A webpage with the address ```localhost:3001``` should open using your systems default browsers
 * NOTE: We are assuming this port is open on your system, its not commonly used so it should be, but if its not, you may need to determine what is running on that port and stop it or, change the port in the code.
