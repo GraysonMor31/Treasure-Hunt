@@ -5,68 +5,15 @@ import json
 import io
 import sys
 import logging
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
+from protocol import Protocol
 from game_state import GameState
 
 # Set up logging for debug, info, error, and critical messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
-
-# Define the Protocol class
-class Protocol:
-    HEADER_LENGTH = 2
-
-    def encode_message(content, content_type="text/json", encoding="utf-8"):
-        """
-        A method to encode a message to be sent over a socket
-
-        Args:
-            content (dict): The content to encode
-            content_type (str): The type of content to encode
-            encoding (str): The encoding to use for the content
-
-        Returns:
-            A bytes object containing the encoded message
-        """
-        content_bytes = json.dumps(content, ensure_ascii=False).encode(encoding)
-        jsonheader = {
-            "byteorder": sys.byteorder,
-            "content-type": content_type,
-            "content-encoding": encoding,
-            "content-length": len(content_bytes),
-        }
-        jsonheader_bytes = json.dumps(jsonheader, ensure_ascii=False).encode(encoding)
-        message_hdr = struct.pack(">H", len(jsonheader_bytes))
-        message = message_hdr + jsonheader_bytes + content_bytes
-        return message
-
-    def decode_header(data):
-        """
-        A method to decode the header of a message
-
-        Args:
-            data (bytes): The data to decode
-        
-        Returns:
-            A tuple containing the decoded header and the length of the header
-        """
-        jsonheader_len = struct.unpack(">H", data[:Protocol.HEADER_LENGTH])[0]
-        jsonheader = json.loads(data[Protocol.HEADER_LENGTH:Protocol.HEADER_LENGTH + jsonheader_len].decode("utf-8"))
-        return jsonheader, Protocol.HEADER_LENGTH + jsonheader_len
-
-    def decode_message(data, jsonheader):
-        """
-        A method to decode a message
-
-        Args:
-            data (bytes): The data to decode
-            jsonheader (dict): The header of the message
-
-        Returns:
-            The decoded message
-        """
-        content_len = jsonheader["content-length"]
-        content = json.loads(data[:content_len].decode(jsonheader["content-encoding"]))
-        return content
 
 class Message:
     def __init__(self, selector, sock, addr, game_state):
@@ -130,7 +77,7 @@ class Message:
             else:
                 self.send_buffer = self.send_buffer[sent:]
                 if sent and not self.send_buffer:
-                    self.close()
+                    self.set_selector_events_mask("r")
 
     def process_events(self, mask):
         """

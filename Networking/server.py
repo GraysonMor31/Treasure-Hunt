@@ -57,7 +57,7 @@ def get_port():
     return port
 
 def create_web_server():
-    web_port = 3001
+    web_port = 3003
     handler = MyRequestHandler
 
     with socketserver.TCPServer(("", web_port), handler) as httpd:
@@ -102,9 +102,6 @@ def main():
     except KeyboardInterrupt:
         log.info("Caught keyboard interrupt, exiting")
     finally:
-        log.info("Closing the server and cleaning up")
-        for key in selector.get_map().values():
-            key.data.close()
         selector.close()
             
 if __name__ == "__main__":
