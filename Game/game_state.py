@@ -9,15 +9,17 @@ class GameState:
     def add_player(self, player):
         self.curr_players.append(player)
         self.player_count += 1
-        self.player_dict[player.address] = player
         
     def remove_player(self, player):
         self.curr_players.remove(player)
         self.player_count -= 1
-        del self.player_dict[player.address]
+
+    def get_players(self):
+        # Returns a list of player data (names and addresses)
+        return [{"name": player} for player in self.curr_players]
     
     # TODO: Implement the following methods at a later time  
-    def send_chat(self, message):
-        
-    def player_turn(self, player):       
-    
+    # def send_chat(self, message):
+
+
+    # def player_turn(self, player):
