@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Treasure Hunt Game</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    </head>
+
+    <style>
+        body {
+            font-family: "Pirata One", cursive;
+            background-color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 36pt;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 80%;
+            max-width: 1200px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-board {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-board table {
+            border-collapse: collapse;
+        }
+
+        .game-board td {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #000;
+            background-color: #fff;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 1.5em;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-info, .chat-box {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .game-info h2, .chat-box h2 {
+            margin-top: 0;
+        }
+
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #chat-input {
+            width: calc(100% - 80px);
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .chat-box button, .game-controls button, .leave_game button {
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .chat-box button:hover, .game-controls button:hover, .leave_game button:hover {
+            background-color: #0056b3;
+        }
+
+        .leave_game {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .leave_game button {
+            background-color: #FF0000;
+        }
+
+        .leave_game button:hover {
+            background-color: #cc0000;
+        }
+    </style>
+
+    <body>
+        <h1>Treasure Hunt Game</h1>
+        <div class="container">
+            <div class="left-panel">
+                <div class="game-board">
+                    <table>
+                        <tbody>
+                            <!--JS Will Populate a table here-->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="game-controls">
+                    <button onclick="up()">⬆️</button>
+                    <button onclick="down()">⬇️</button>
+                    <button onclick="left()">⬅️</button>
+                    <button onclick="right()">➡️</button>
+                    <button onclick="DiagUpLeft()">↖️</button>
+                    <button onclick="DiagUpRight()">↗️</button>
+                    <button onclick="DiagDownLeft()">↙️</button>
+                    <button onclick="DiagDownRight()">↘️</button>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="game-info">
+                    <h2>Game Info</h2>
+                    <p>Players: </p> <!--JS will add and remove from this list dynamically-->
+                    <p>Turn: </p> <!--JS will change this dynamically based on order of players-->
+                    <p>Winner: </p> <!--JS will change this dynamically when a player wins-->
+                </div>
+                <div class="chat-box">
+                    <h2>Chat Box</h2>
+                    <div class="chat-messages">
+                        <!--JS Will Populate Chat Messages Here-->
+                    </div>
+                    <input type="text" id="chat-input" placeholder="Enter your message here">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+        <div class="leave_game">
+            <button onclick="leaveGame()">Leave Game</button>
+        </div>
+    </body>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        const tbody = document.querySelector(".game-board tbody");
+
+        for (let row = 0; row < 10; row++) {
+            const tr = document.createElement("tr");
+            for (let col = 0; col < 10; col++) {
+                const td = document.createElement("td");
+                td.className = (row + col) % 2 === 0 ? "even" : "odd";
+                td.id = `cell-${row}-${col}`;
+                tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+        }
+    });
+    </script>
+</html>
