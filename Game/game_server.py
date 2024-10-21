@@ -77,7 +77,8 @@ class Message:
             else:
                 self.send_buffer = self.send_buffer[sent:]
                 if sent and not self.send_buffer:
-                    self.set_selector_events_mask("r")
+                    #self.set_selector_events_mask("r")
+                    self.close()
 
     def process_events(self, mask):
         """
