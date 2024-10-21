@@ -17,7 +17,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Web'))
 # Import custom modules
 from game_server import Message
 from game_state import GameState
-from web_server import MyRequestHandler
+from website import MyRequestHandler
 from protocol import Protocol
 
 # Set up logging for debug, info, and error messages
