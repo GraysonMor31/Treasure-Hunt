@@ -33,10 +33,15 @@ python3 server.py <host> <port>
 ```
 2. Start each client
 ```bash
-python3 client.py <host> <port> <username>
+python3 client.py <host> <port> <action> <value>
 ```
 3. A webpage with the address ```localhost:3001``` should open using your systems default browsers
 * NOTE: We are assuming this port is open on your system, its not commonly used so it should be, but if its not, you may need to determine what is running on that port and stop it or, change the port in the code.
+
+4. For our current message protocol, our 2 current actions are join_game and leave_game. Here is an example for running the client code:
+```bash
+python3 client.py localhost 12345 join_game username
+```
 
 ### Play
 * Use mouse to click on desired square to move to
