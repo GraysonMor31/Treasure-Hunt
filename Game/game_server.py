@@ -77,9 +77,8 @@ class Message:
             else:
                 self.send_buffer = self.send_buffer[sent:]
                 if sent and not self.send_buffer:
-                    #self.set_selector_events_mask("r")
-                    self.close()
-
+                    self.set_selector_events_mask("r")
+                    
     def process_events(self, mask):
         """
         Process events for the socket wether it is read or write

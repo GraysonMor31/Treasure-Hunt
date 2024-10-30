@@ -1,10 +1,8 @@
 # Import the necessary libraries
 import socket
 import selectors
-import socketserver
 import traceback
 import logging
-import http.server
 import threading
 import os
 import sys
@@ -17,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Web'))
 # Import custom modules
 from game_server import Message
 from game_state import GameState
-from website import MyRequestHandler
+from website import Website
 from protocol import Protocol
 
 # Set up logging for debug, info, and error messages
@@ -41,10 +39,10 @@ def accept_wrapper(sock):
         log.error(traceback.format_exc())
 
 def get_host():
-    host = input("Enter the host to listen on, defualt is localhost @ 127.0.0.1: ")
+    host = input("Enter the host to listen on, default is localhost @ 0.0.0.0: ")
     if not host:
-        log.error("Invalid hostname or IP address, assigning default the defualt host")
-        host = "127.0.0.1"
+        log.error("Invalid hostname or IP address, assigning default the default host")
+        host = "0.0.0.0"
     return host
 
 def get_port():
@@ -52,17 +50,12 @@ def get_port():
     try:
         port = int(port_input)
     except ValueError:
-        log.error("Invalid port number, assigning the defualt port")
+        log.error("Invalid port number, assigning the default port")
         port = 12345
     return port
 
 def create_web_server():
-    web_port = 3003
-    handler = MyRequestHandler
-
-    with socketserver.TCPServer(("", web_port), handler) as httpd:
-        log.info(f"Serving on port {web_port}")
-        httpd.serve_forever()
+    Website.run()
 
 def main():
     # Get the host and port from user input
