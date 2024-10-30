@@ -6,6 +6,8 @@ import logging
 import threading
 import os
 import sys
+import time
+import flask
 
 # Add the parent directory to the path to get other modules
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Game'))
@@ -57,6 +59,19 @@ def get_port():
 def create_web_server():
     Website.run()
 
+def broadcast_game_state(game_state, selector):
+    timestamp = time.time()  # Server timestamp
+    current_state = game_state.get_state()
+    update_message = {"action": "state_update", "timestamp": timestamp, "state": current_state}
+    message = Protocol.encode_message(update_message)
+    
+    clients = list(selector.get_map().values())
+    
+    for client in clients:
+        if isinstance(client.data, Message):
+            client.data.send_buffer += message
+            client.data.set_selector_events_mask("w")
+
 def main():
     # Get the host and port from user input
     host = get_host()
@@ -77,10 +92,20 @@ def main():
     listen_socket.setblocking(False)
     selector.register(listen_socket, selectors.EVENT_READ, data=None)
 
+    # Set up timing for periodic game state broadcasts
+    BROADCAST_INTERVAL = 0.1  # in seconds
+    last_broadcast = time.time()
+
     # Main event loop to listen for incoming connections continuously, only exit on keyboard interrupt
     try:
         while True:
-            events = selector.select(timeout=None)
+            # Check the time for broadcasting the game state
+            current_time = time.time()
+            if current_time - last_broadcast >= BROADCAST_INTERVAL:
+                broadcast_game_state(game_state, selector)
+                last_broadcast = current_time
+
+            events = selector.select(timeout=0.05)
             for key, mask in events:
                 if key.data is None:
                     accept_wrapper(key.fileobj)
@@ -96,6 +121,6 @@ def main():
         log.info("Caught keyboard interrupt, exiting")
     finally:
         selector.close()
-            
+        
 if __name__ == "__main__":
     main()

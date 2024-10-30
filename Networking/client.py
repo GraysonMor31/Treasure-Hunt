@@ -1,9 +1,11 @@
 # Import the necessary libraries
 import sys
+import traceback
 import requests
 import logging
 import webbrowser
 import os
+import selectors
 
 # Import custom libraries
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Game'))
@@ -16,6 +18,7 @@ log = logging.getLogger(__name__)
 # List to maintain connected clients and game data
 connected_clients = []
 
+sel = selectors.DefaultSelector()
 # create a request dictionary based on the action 
 def create_request(action, value):
     if action == "join_game":
@@ -76,6 +79,23 @@ def main():
 
     try:
         send_request(action, value)
+
+        while True:
+            events = sel.select(timeout=1)
+            if not events:
+                log.debug("No events detected, continuing...")
+                continue  # Continue looping if no events
+            for key, mask in events:
+                message = key.data
+                try:
+                    message.process_events(mask)
+                except Exception as e:
+                    log.error(f"main: error: exception for {message.addr}: {e}\n{traceback.format_exc()}")
+                    message.close()  # Ensure the message/socket is closed on error
+            # Check if no more sockets are being monitored and break the loop
+            if not sel.get_map():
+                log.info("No more active connections, exiting.")
+                break
     except KeyboardInterrupt:
         log.info("Caught keyboard interrupt, exiting")
         send_request("leave_game", value)

@@ -175,21 +175,45 @@ class Message:
         else:
             log.error("No request")
     
-    def send_player_list(self):
-        clients = self.game_state.get_players()  # Use the new get_players method
+    def send_player_list(self, delta_only=True):
+        if delta_only:
+            clients = self.game_state.get_recent_changes()  # Implement tracking of changes in game_state
+        else:
+            clients = self.game_state.get_players()
+
         update_message = {"action": "update_clients", "clients": clients}
         message = Protocol.encode_message(update_message)
         self.send_buffer += message
         self.set_selector_events_mask("w")
-
+    
     def close(self):
         """
         Close the connection to the socket and deregister it from the selector
         
         Args:
             Message object
-        """
+        
         log.info(f"closing connection to {self.addr}")
+        try:
+            self.selector.unregister(self.sock)
+        except Exception as e:
+            log.error(f"error: selector.unregister() exception for {self.addr}: {repr(e)}")
+        finally:
+            self.sock.close()
+            self.sock = None
+            """
+    def close(self):
+        log.info(f"closing connection to {self.addr}")
+        player_name = self.game_state.get_player_name(self.addr)  # Retrieve player's name before removal
+        self.game_state.remove_player(player_name)
+        disconnect_message = {"action": "player_disconnect", "player": player_name}
+        message = Protocol.encode_message(disconnect_message)
+
+        # Broadcast the disconnect message to all clients
+        for client in self.selector.get_map().values():
+            if isinstance(client.data, Message) and client.data != self:
+                client.data.send_buffer += message
+                client.data.set_selector_events_mask("w")
         try:
             self.selector.unregister(self.sock)
         except Exception as e:
