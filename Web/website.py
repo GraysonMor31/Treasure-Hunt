@@ -1,47 +1,47 @@
-import http.server
-import socketserver
-import json
 import logging
+import os
+from flask import Flask, request, jsonify, send_from_directory
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
 
-# Define the request handler
-class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        log.info(f"Received GET request for: {self.path}")
-        self.send_response(200)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        
-        # Example response
-        response = {
-            "message": "Hello, world!",
-            "path": self.path
-        }
-        self.wfile.write(json.dumps(response).encode('utf-8'))
+class Website:
+    @staticmethod
+    def create_app():
+        app = Flask(__name__)
+        return app
 
-    def do_POST(self):
-        log.info(f"Received POST request for: {self.path}")
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        
-        log.debug(f"POST data: {post_data}")
-        
-        # You can process the POST data here
-        response = {
-            "received": post_data.decode('utf-8')
-        }
-        
-        self.send_response(200)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        self.wfile.write(json.dumps(response).encode('utf-8'))
-        
-    def serve_index_page():
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        with open(os.path.join(os.path.dirname(__file__), '..', 'Web', 'index.html'), 'rb') as file:
-            return file.read()
+    app = create_app.__func__()
+
+    @app.route("/get_state", methods=["GET"])
+    def get_state():
+        return jsonify({"result": "state"})
+
+    @app.route("/join_game", methods=["POST"])
+    def join_game():
+        data = request.get_json()
+        player_name = data.get("player_name")
+        return jsonify({"result": f"joined as {player_name}"})
+
+    @app.route("/leave_game", methods=["POST"])
+    def leave_game():
+        data = request.get_json()
+        player_name = data.get("player_name")
+        return jsonify({"result": f"left as {player_name}"})
+
+    @app.route("/update_clients", methods=["POST"])
+    def update_clients():
+        data = request.get_json()
+        clients = data.get("clients")
+        return jsonify({"result": f"updated clients: {clients}"})
+
+    @app.route("/")
+    def serve_index():
+        return send_from_directory(os.path.dirname(__file__), "index.html")
+
+    @staticmethod
+    def run():
+        Website.app.run(port=3003, debug=True, use_reloader=False)
+
+if __name__ == "__main__":
+    Website.run()
