@@ -50,7 +50,7 @@ def handle_update(data):
         log.info(f"Player left: {data.get('player_name')}")
 
 def send_request(action, value):
-    url = "http://0.0.0.0:3003"
+    url = "http://10.0.0.228:3003"
     if action == "join_game":
         response = requests.post(f"{url}/join_game", json={"player_name": value})
     elif action == "leave_game":
