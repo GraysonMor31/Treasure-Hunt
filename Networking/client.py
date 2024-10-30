@@ -75,7 +75,7 @@ def main():
     action, value = sys.argv[3], sys.argv[4]
     request = create_request(action, value)
     
-    webbrowser.open_new_tab("http://localhost:3003")
+    webbrowser.open_new_tab("http://0.0.0.0:3003")
 
     try:
         send_request(action, value)
