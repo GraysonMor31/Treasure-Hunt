@@ -92,12 +92,25 @@ class Message:
         message = message_hdr + jsonheader_bytes + content_bytes
         return message # return the complete message 
 
-
+    '''
     # process the JSON response content 
     def _process_response_json_content(self):
         content = self.response
         result = content.get("result")
         print(f"got result: {result}")
+    '''
+    def _process_response_json_content(self):
+        content = self.response
+        action = content.get("action")
+    
+        if action == "update_clients":
+            # Update client list with the new player list
+            clients = content.get("clients", [])
+            print(f"Updated client list: {clients}")  # This should now show updated clients
+            # Trigger UI updates or other actions as needed
+        else:
+            result = content.get("result")
+            print(f"got result: {result}")
         
         
         
