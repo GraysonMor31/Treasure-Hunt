@@ -144,17 +144,11 @@ class Message:
                 log.info(f"received {self.jsonheader['content-type']} request from {self.addr}")
 
     def create_response(self):
-        """
-        Create a response to the request based on the action and value in the request
-        
-        Args:
-            Message object
-        """
         if self.request:
             action = self.request.get("action")
             if action == "join_game":
-                player_name = self.request.get("value")
-                self.game_state.add_player(player_name)
+                player_name = self.request.get("player_name")
+                self.game_state.add_player(player_name, self.addr)  # Pass the address here
                 self.send_player_list()
             elif action == "leave_game":
                 player_name = self.request.get("player_name")
@@ -174,22 +168,55 @@ class Message:
             self.response_created = True
         else:
             log.error("No request")
-    
-    def send_player_list(self):
-        clients = self.game_state.get_players()  # Use the new get_players method
-        update_message = {"action": "update_clients", "clients": clients}
-        message = Protocol.encode_message(update_message)
-        self.send_buffer += message
-        self.set_selector_events_mask("w")
 
+    
+    def send_player_list(self, delta_only=True):
+        clients = self.game_state.get_recent_changes() if delta_only else self.game_state.get_players()
+
+        if not clients:  # If no recent changes, send the full list
+            clients = self.game_state.get_players()
+        
+        update_message = {"action": "update_clients", "clients": clients}
+        log.info(f"Broadcasting updated client list: {clients}")
+        message = Protocol.encode_message(update_message)
+
+        # Make a copy of the values to avoid dictionary changes during iteration
+        clients_list = list(self.selector.get_map().values())
+        for client in clients_list:
+            if isinstance(client.data, Message):
+                client.data.send_buffer += message
+                client.data.set_selector_events_mask("w")
+
+
+    
     def close(self):
         """
         Close the connection to the socket and deregister it from the selector
         
         Args:
             Message object
-        """
+        
         log.info(f"closing connection to {self.addr}")
+        try:
+            self.selector.unregister(self.sock)
+        except Exception as e:
+            log.error(f"error: selector.unregister() exception for {self.addr}: {repr(e)}")
+        finally:
+            self.sock.close()
+            self.sock = None
+            """
+    def close(self):
+        log.info(f"closing connection to {self.addr}")
+        player_name = self.game_state.get_player_name(self.addr)  # Retrieve player's name before removal
+        self.game_state.remove_player(player_name)
+        disconnect_message = {"action": "player_disconnect", "player": player_name}
+        message = Protocol.encode_message(disconnect_message)
+
+        # Broadcast the disconnect message to all clients
+        for client in self.selector.get_map().values():
+            if isinstance(client.data, Message) and client.data != self:
+                client.data.send_buffer += message
+                client.data.set_selector_events_mask("w")
         try:
             self.selector.unregister(self.sock)
         except Exception as e:

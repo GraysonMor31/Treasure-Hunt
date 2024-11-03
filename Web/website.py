@@ -41,7 +41,7 @@ class Website:
 
     @staticmethod
     def run():
-        Website.app.run(port=3003, debug=True, use_reloader=False)
+        Website.app.run(host='0.0.0.0',port=3003, debug=True, use_reloader=False)
 
 if __name__ == "__main__":
     Website.run()
