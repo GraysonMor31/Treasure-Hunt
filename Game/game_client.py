@@ -108,12 +108,13 @@ class Message:
             clients = content.get("clients", [])
             print(f"Updated client list: {clients}")  # This should now show updated clients
             # Trigger UI updates or other actions as needed
+            
+          
         else:
             result = content.get("result")
-            print(f"got result: {result}")
-        
-        
-        
+            print(f"got result: {result}")    
+    
+                
     # process binary response content 
     def _process_response_binary_content(self):
         content = self.response

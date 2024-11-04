@@ -155,10 +155,28 @@ class Message:
                 self.game_state.remove_player(player_name)
                 self.send_player_list()
             elif action == "get_state":
-                response = {"result": self.game_state.get_state()}
+                response = {
+                    "result": self.game_state.get_state(),
+                    "current_turn": self.game_state.get_curr_turn()          
+                }
                 message = Protocol.encode_message(response)
                 self.send_buffer += message
                 self.set_selector_events_mask("w")
+            elif action == "end_trun":
+              curr_player = self.game_state.get_curr_turn()
+              if curr_player == self.request.get("player_name"):
+                  self.game_state.get_next_turn()
+                  self.broadcaset_turn_update()
+              else: 
+                  log.warning("someone attmpeted by a player who out of turn")
+            
+            elif action == "get_current_trun":
+                    curr_turn = self.game_state.get_curr_turn()
+                    response = {"action": "current_turn", "current_player": curr_turn}
+                    message = Protocol.encode_message(response)
+                    self.send_buffer += message
+                    self.set_selector_events_mask("w")   
+
             else:
                 log.error("Unknown action received")
                 response = {"error": "Unknown action"}
@@ -168,7 +186,18 @@ class Message:
             self.response_created = True
         else:
             log.error("No request")
-
+    
+    def broadcaset_turn_update(self): 
+        curr_trun = self.game_state.get_curr_turn()
+        update_message = {"action": "update_turn", "current_player": curr_trun}
+        message = Protocol.encode_message(update_message)
+        
+        for client in self.selector.get_map().values():
+            if isinstance(client.data, Message):
+                client.data.send_buffer += message
+                client.data.set_selector_events_mask("w")
+                
+            
     
     def send_player_list(self, delta_only=True):
         clients = self.game_state.get_recent_changes() if delta_only else self.game_state.get_players()
@@ -186,7 +215,6 @@ class Message:
             if isinstance(client.data, Message):
                 client.data.send_buffer += message
                 client.data.set_selector_events_mask("w")
-
 
     
     def close(self):
