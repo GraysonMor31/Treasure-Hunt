@@ -33,7 +33,7 @@ python3 server.py <host> <port>
 ```
 2. Start each client
 ```bash
-python3 client.py <host> <port> <action> <value>
+python3 client.py <host> <port> <host> <action> <value>
 ```
 3. A webpage with the address ```localhost:3001``` should open using your systems default browsers
 * NOTE: We are assuming this port is open on your system, its not commonly used so it should be, but if its not, you may need to determine what is running on that port and stop it or, change the port in the code.
@@ -92,6 +92,7 @@ python3 client.py localhost 12345 join_game username
     * [Sys](https://docs.python.org/3/library/sys.html)
     * [HTTP Servers](https://docs.python.org/3/library/http.server.html)
     * [Unit Tests](https://docs.python.org/3/library/unittest.html)
+    * [Flask](https://flask.palletsprojects.com/en/stable/installation/#python-version)
 
 3. Code Docs
     * [Server]()
