@@ -1,4 +1,5 @@
 # Import the necessary libraries
+import argparse
 import sys
 import traceback
 import requests
@@ -75,7 +76,7 @@ def send_http_request(action, value, web_server_ip):
         handle_update(data)
     else:
         log.error(f"Request failed with status code {response.status_code}")
-
+'''
 def main():
     if len(sys.argv) != 6:
         log.error("Usage: python client.py <tcp_host> <tcp_port> <web_server_ip> <action> <value>")
@@ -135,6 +136,71 @@ def main():
         log.error(f"main: error: {e}\n{traceback.format_exc()}")
         sel.unregister(sock)
         sock.close()
+        '''
+def main():
+    parser = argparse.ArgumentParser(description="Client for connecting to the game server.")
+    parser.add_argument('-i', '--ip', required=True, help="Server IP address or DNS.")
+    parser.add_argument('-p', '--port', type=int, required=True, help="Server TCP port.")
+    parser.add_argument('action', choices=['join_game', 'leave_game', 'get_state'], help="Action to perform.")
+    parser.add_argument('value', help="Value for the action, like player name.")
+    
+    args = parser.parse_args()
+    tcp_host = args.ip
+    tcp_port = args.port
+    action = args.action
+    value = args.value
+    
+    # Open the web browser to the Flask server
+    webbrowser.open_new_tab(f"http://{tcp_host}:3003")
+
+    try:
+        # Create a socket object for TCP communication
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((tcp_host, tcp_port))
+        sock.setblocking(False)
+        sel.register(sock, selectors.EVENT_READ | selectors.EVENT_WRITE, data=None)
+
+        send_tcp_request(sock, action, value)
+
+        buffer = b""
+        while True:
+            events = sel.select(timeout=1)
+            if not events:
+                log.debug("No events detected, continuing...")
+                continue
+            for key, mask in events:
+                if mask & selectors.EVENT_READ:
+                    response = sock.recv(4096)
+                    if response:
+                        buffer += response
+                        while True:
+                            if len(buffer) < Protocol.HEADER_LENGTH:
+                                break
+                            jsonheader, header_length = Protocol.decode_header(buffer)
+                            if jsonheader is None:
+                                break
+                            if len(buffer) < header_length + jsonheader["content-length"]:
+                                break
+                            message = Protocol.decode_message(buffer[header_length:], jsonheader)
+                            buffer = buffer[header_length + jsonheader["content-length"]:]
+                            handle_update(message)
+                    else:
+                        log.info("Connection closed by server")
+                        sel.unregister(sock)
+                        sock.close()
+                        return
+                if mask & selectors.EVENT_WRITE:
+                    pass
+    except KeyboardInterrupt:
+        log.info("Caught keyboard interrupt, exiting")
+        send_tcp_request(sock, "leave_game", value)
+        sel.unregister(sock)
+        sock.close()
+    except Exception as e:
+        log.error(f"main: error: {e}\n{traceback.format_exc()}")
+        sel.unregister(sock)
+        sock.close()
+
 
 if __name__ == "__main__":
     main()

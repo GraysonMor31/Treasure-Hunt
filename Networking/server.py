@@ -1,13 +1,13 @@
 # Import the necessary libraries
-import socket
-import selectors
-import traceback
-import logging
-import threading
 import os
 import sys
+import argparse
+import socket
+import selectors
+import logging
+import threading
 import time
-import flask
+import traceback
 
 # Add the parent directory to the path to get other modules
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Game'))
@@ -73,7 +73,8 @@ def broadcast_game_state(game_state, selector):
             client.data.set_selector_events_mask("w")
 
 def main():
-    # Get the host and port from user input
+    '''
+   # Get the host and port from user input
     host = get_host()
     port = get_port()
     
@@ -85,12 +86,30 @@ def main():
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_socket.bind((host, port))
-    
+     
     # Don't block on the socket, to listen for multiple incoming connections
     log.info(f"Listening on {host}: {port}")
     listen_socket.listen()
     listen_socket.setblocking(False)
     selector.register(listen_socket, selectors.EVENT_READ, data=None)
+    '''
+    parser = argparse.ArgumentParser(description="Server for the game.")
+    parser.add_argument('-p', '--port', type=int, required=True, help="Server TCP port to listen on.")
+    args = parser.parse_args()
+    host = "0.0.0.0"  # Default to listen on all interfaces
+    port = args.port
+
+    web_server_thread = threading.Thread(target=create_web_server, daemon=True)
+    web_server_thread.start()
+
+    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listen_socket.bind((host, port))
+    listen_socket.listen()
+    listen_socket.setblocking(False)
+    selector.register(listen_socket, selectors.EVENT_READ, data=None)
+
+    log.info(f"Server listening on {host}:{port}")
 
     # Set up timing for periodic game state broadcasts
     BROADCAST_INTERVAL = 0.1  # in seconds
