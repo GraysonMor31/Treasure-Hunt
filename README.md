@@ -18,7 +18,7 @@ This is a simple strategy based game that includes elements of Chess and a Choos
   * Windows 10/11
   * MacOS Sonoma or Newer
   * Linux
-* Python 3.6+
+* Python 3.11
 * Git 2.46.1+
 * Web Browser (Chrome, Mozilla, Safari)
 ### Download
@@ -26,24 +26,30 @@ This is a simple strategy based game that includes elements of Chess and a Choos
 ```bash
 git clone https://github.com/GraysonMor31/Treasure-Hunt.git
 ```
+2. Install Dependancies using PIP
+```bash
+pip install -r requirements.txt
+```
+3. 
 ### Run
 1. Start the server
 ```bash
-python3 server.py <host> <port>
+python3 server.py -p <port>
 ```
+* The port can be any value > 1023 and < 65535
+* The server IP is hard-coded to 0.0.0.0
 2. Start each client
 ```bash
-python3 client.py <host> <port> <host> <action> <value>
+python3 client.py -i <host-ip-address> -p <port> <action> <value>
 ```
-3. A webpage with the address ```localhost:3001``` should open using your systems default browsers
-* NOTE: We are assuming this port is open on your system, its not commonly used so it should be, but if its not, you may need to determine what is running on that port and stop it or, change the port in the code.
-
+3. A webpage with the address ```http://0.0.0.0:3003``` should open using your systems default browsers
+* NOTE: We are assuming this port is open on your system adn is hard coded, its not commonly used so it should be, but if its not, you may need to determine what is running on that port and stop it or, change the port in the code.
 4. For our current message protocol, our 2 current actions are join_game and leave_game. Here is an example for running the client code:
 ```bash
-python3 client.py localhost 12345 join_game username
+python3 client.py -i 0.0.0.0 -p 12345 join_game username
 ```
 
-### Play
+### Play (UNDER CONSTRUCTION)
 * Use mouse to click on desired square to move to
 * You are denoted by a colored dot, your dot will appear in the upper right hand corner of the web-page
 * The "treasure" randomly spawns each game (don't do the same path twice...it won't work)
@@ -71,9 +77,9 @@ python3 client.py localhost 12345 join_game username
 |--------|--------|-------|
 | 0 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 1 - Backlog: Updated |
 | 1 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 - Backlog: Updated |
-| 2 | :construction: | Spring Upcoming - Tasks Planned: 4 |
-| 3 | :calendar: | Spring Upcoming - Tasks Planned: X |
-| 4 | :calendar: | Spring Upcoming - Tasks Planned: X |
+| 2 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 - Backlog: Updated |
+| 3 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 1 - Backlog: Updated |
+| 4 | :construction: | Spring Upcoming - Tasks Planned: 8 - Tasks In Progess: 2 |
 
 ## Additional Resources
 * Installation and Setup Video
@@ -84,7 +90,7 @@ python3 client.py localhost 12345 join_game username
     * [Statement of Work](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Statement%20of%20Work.pdf)
 
 2. Python Docs
-    *  [Socket](https://docs.python.org/3/library/socket.html)
+    * [Socket](https://docs.python.org/3/library/socket.html)
     * [Selectors](https://docs.python.org/3/library/selectors.html)
     * [JSON](https://docs.python.org/3/library/json.html)
     * [Struct](https://docs.python.org/3/library/struct.html)
