@@ -1,5 +1,0 @@
-Python Version:
-Python 3.8 and newer
-
-Python Libraries:
-Flask
