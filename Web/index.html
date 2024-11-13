@@ -168,19 +168,124 @@
     </body>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-        const tbody = document.querySelector(".game-board tbody");
-
-        for (let row = 0; row < 10; row++) {
-            const tr = document.createElement("tr");
-            for (let col = 0; col < 10; col++) {
-                const td = document.createElement("td");
-                td.className = (row + col) % 2 === 0 ? "even" : "odd";
-                td.id = `cell-${row}-${col}`;
-                tr.appendChild(td);
-            }
-            tbody.appendChild(tr);
+        // Variables to track player position and game state
+        let currentPlayerPosition = { row: 0, col: 0 }; // Example starting position
+        let currentTurn = null;
+        let players = [];
+        let gameOver = false;
+    
+        // Function to set up the board and initialize player position
+        function setupGame() {
+            document.addEventListener("DOMContentLoaded", function() {
+                const tbody = document.querySelector(".game-board tbody");
+    
+                for (let row = 0; row < 10; row++) {
+                    const tr = document.createElement("tr");
+                    for (let col = 0; col < 10; col++) {
+                        const td = document.createElement("td");
+                        td.className = (row + col) % 2 === 0 ? "even" : "odd";
+                        td.id = `cell-${row}-${col}`;
+                        td.onclick = () => handleCellClick(row, col);
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+    
+                // Initial player position
+                updatePlayerPosition(currentPlayerPosition.row, currentPlayerPosition.col);
+            });
         }
-    });
-    </script>
+    
+        // Function to update the player position on the board
+        function updatePlayerPosition(newRow, newCol) {
+            // Clear previous position
+            const prevCell = document.getElementById(`cell-${currentPlayerPosition.row}-${currentPlayerPosition.col}`);
+            if (prevCell) prevCell.style.backgroundColor = "#fff";
+    
+            // Update position
+            currentPlayerPosition = { row: newRow, col: newCol };
+    
+            // Set new position
+            const newCell = document.getElementById(`cell-${newRow}-${newCol}`);
+            if (newCell) newCell.style.backgroundColor = "#00f"; // Player color
+        }
+    
+        // Functions to handle directional moves
+        function up() { movePlayer(-1, 0); }
+        function down() { movePlayer(1, 0); }
+        function left() { movePlayer(0, -1); }
+        function right() { movePlayer(0, 1); }
+        function DiagUpLeft() { movePlayer(-1, -1); }
+        function DiagUpRight() { movePlayer(-1, 1); }
+        function DiagDownLeft() { movePlayer(1, -1); }
+        function DiagDownRight() { movePlayer(1, 1); }
+    
+        // Move player function
+        function movePlayer(rowChange, colChange) {
+            if (gameOver) return;
+    
+            const newRow = currentPlayerPosition.row + rowChange;
+            const newCol = currentPlayerPosition.col + colChange;
+    
+            // Boundary check
+            if (newRow < 0 || newRow >= 10 || newCol < 0 || newCol >= 10) return;
+    
+            // Check if the new cell is occupied
+            const newCell = document.getElementById(`cell-${newRow}-${newCol}`);
+            if (newCell && !newCell.classList.contains("occupied")) {
+                updatePlayerPosition(newRow, newCol);
+    
+                // Mark cell as occupied
+                newCell.classList.add("occupied");
+    
+                // Send move to server
+                sendMove(newRow, newCol);
+            }
+        }
+    
+        // Handle cell click
+        function handleCellClick(row, col) {
+            console.log(`Clicked on cell: ${row}, ${col}`);
+        }
+    
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById("chat-input");
+            const message = input.value;
+            if (message) {
+                const chatMessages = document.querySelector(".chat-messages");
+                const messageElement = document.createElement("p");
+                messageElement.textContent = `You: ${message}`;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+                // Send message to server
+                sendChatMessage(message);
+    
+                input.value = "";
+            }
+        }
+    
+        function sendChatMessage(message) {
+            // Example function to send chat message to server
+            console.log(`Sending message to server: ${message}`);
+        }
+    
+        // Send move to server (Placeholder function)
+        function sendMove(row, col) {
+            console.log(`Sending move to server: Row ${row}, Col ${col}`);
+            // Actual server communication goes here
+        }
+    
+        // Function to handle leaving the game
+        function leaveGame() {
+            // Example function to notify server and leave game
+            console.log("Player is leaving the game");
+            alert("You have left the game.");
+            window.location.reload(); // Refresh the page or redirect as needed
+        }
+    
+        // Initialize game
+        setupGame();
+    </script>    
 </html>
