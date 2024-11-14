@@ -25,7 +25,7 @@ sel = selectors.DefaultSelector()
 # List to maintain connected clients and game data
 connected_clients = []
 
-# create a request dictionary based on the action 
+# Create a request dictionary based on the action 
 def create_request(action, value):
     if action == "join_game":
         log.info(f"Adding player with name {value}")
@@ -36,11 +36,17 @@ def create_request(action, value):
     elif action == "get_state":
         log.info("Getting game state")
         return {"action": action, "value": value}
+    elif action == "move":
+        log.info(f"Player {value['player_name']} moving to {value['position']}")
+        return {"action": action, "player_name": value["player_name"], "position": value["position"]}
+    elif action == "chat":
+        log.info(f"Player {value['player_name']} sending message: {value['message']}")
+        return {"action": action, "player_name": value["player_name"], "message": value["message"]}
     else:
-        # error if the action is unknown 
-       raise ValueError(f"Unknown action: {action}")
+        raise ValueError(f"Unknown action: {action}")
 
-# Handle server response to update the list of clients
+# Update the handle_update function
+
 def handle_update(data):
     global connected_clients
     action = data.get('action')
@@ -54,6 +60,12 @@ def handle_update(data):
     
     elif action == 'player_left':
         log.info(f"Player left: {data.get('player_name')}")
+    
+    elif action == 'state_update':
+        log.info(f"Game state updated: {data.get('state')}")
+    
+    elif action == 'chat':
+        log.info(f"Chat message from {data.get('player_name')}: {data.get('message')}")
 
 def send_tcp_request(sock, action, value):
     request = create_request(action, value)

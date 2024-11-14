@@ -7,15 +7,12 @@ class GameState:
         self.winner = None
         self.recent_changes = []  # To track recent player changes
         
-             
     def add_player(self, player, address):
         self.curr_players.append(player)
         self.player_count += 1
         self.player_dict[address] = player  # Store the address and name
         self.recent_changes.append({"name": player, "status": "joined", "current_turn": self.get_curr_turn()})
-        
-        
-        
+          
     def remove_player(self, player):
         if player in self.curr_players:
             self.curr_players.remove(player)
@@ -55,13 +52,14 @@ class GameState:
         if  self.curr_players:
             return  self.curr_players[self.player_count % len(self.curr_players)]
         
-    
     def get_next_turn(self):
         if not self.game_over and self.curr_players:
             self.player_count =  (self.player_count + 1) % (len(self.curr_players))
             return self.get_curr_turn()
     
-  
+    def update_player_position(self, player, position):
+        if player in self.curr_players:
+            self.recent_changes.append({"name": player, "position": position})
         
     def get_winner(self, player):
         self.winner = player 
