@@ -1,8 +1,5 @@
-# Import python libraries
-import selectors
 import struct
 import json
-import io
 import sys
 import logging
 
