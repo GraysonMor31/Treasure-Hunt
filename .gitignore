@@ -6,3 +6,6 @@ __pycache__/
 # Logging
 *.pyc
 *.log
+
+# VS Code
+.vscode
