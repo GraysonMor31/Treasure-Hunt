@@ -148,7 +148,7 @@ class Message:
             action = self.request.get("action")
             if action == "join_game":
                 player_name = self.request.get("player_name")
-                self.game_state.add_player(player_name, self.addr)  # Pass the address here
+                self.game_state.add_player(player_name, self.addr)
                 self.send_player_list()
             elif action == "leave_game":
                 player_name = self.request.get("player_name")
@@ -157,26 +157,20 @@ class Message:
             elif action == "get_state":
                 response = {
                     "result": self.game_state.get_state(),
-                    "current_turn": self.game_state.get_curr_turn()          
+                    "current_turn": self.game_state.get_curr_turn()
                 }
                 message = Protocol.encode_message(response)
                 self.send_buffer += message
                 self.set_selector_events_mask("w")
-            elif action == "end_trun":
-              curr_player = self.game_state.get_curr_turn()
-              if curr_player == self.request.get("player_name"):
-                  self.game_state.get_next_turn()
-                  self.broadcaset_turn_update()
-              else: 
-                  log.warning("someone attmpeted by a player who out of turn")
-            
-            elif action == "get_current_trun":
-                    curr_turn = self.game_state.get_curr_turn()
-                    response = {"action": "current_turn", "current_player": curr_turn}
-                    message = Protocol.encode_message(response)
-                    self.send_buffer += message
-                    self.set_selector_events_mask("w")   
-
+            elif action == "move":
+                player_name = self.request.get("player_name")
+                new_position = self.request.get("position")
+                self.game_state.update_player_position(player_name, new_position)
+                self.broadcast_game_state()
+            elif action == "chat":
+                player_name = self.request.get("player_name")
+                message = self.request.get("message")
+                self.broadcast_chat_message(player_name, message)
             else:
                 log.error("Unknown action received")
                 response = {"error": "Unknown action"}
@@ -197,7 +191,22 @@ class Message:
                 client.data.send_buffer += message
                 client.data.set_selector_events_mask("w")
                 
-            
+    def broadcast_game_state(self):
+        current_state = self.game_state.get_state()
+        update_message = {"action": "state_update", "state": current_state}
+        message = Protocol.encode_message(update_message)
+        for client in self.selector.get_map().values():
+            if isinstance(client.data, Message):
+                client.data.send_buffer += message
+                client.data.set_selector_events_mask("w")
+
+    def broadcast_chat_message(self, player_name, message):
+        chat_message = {"action": "chat", "player_name": player_name, "message": message}
+        message = Protocol.encode_message(chat_message)
+        for client in self.selector.get_map().values():
+            if isinstance(client.data, Message):
+                client.data.send_buffer += message
+                client.data.set_selector_events_mask("w")            
     
     def send_player_list(self, delta_only=True):
         clients = self.game_state.get_recent_changes() if delta_only else self.game_state.get_players()

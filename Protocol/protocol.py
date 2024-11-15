@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 class Protocol:
     HEADER_LENGTH = 2
 
+    @staticmethod
     def encode_message(content, content_type="text/json", encoding="utf-8"):
         try:
             content_bytes = json.dumps(content, ensure_ascii=False).encode(encoding)
@@ -31,6 +32,7 @@ class Protocol:
             log.error(f"Error encoding message: {e}")
             return None
 
+    @staticmethod
     def decode_header(data):
         try:
             jsonheader_len = struct.unpack(">H", data[:Protocol.HEADER_LENGTH])[0]
@@ -38,8 +40,9 @@ class Protocol:
             return jsonheader, Protocol.HEADER_LENGTH + jsonheader_len
         except Exception as e:
             log.error(f"Error decoding header: {e}")
-            return None
+            return None, 0
 
+    @staticmethod
     def decode_message(data, jsonheader):
         try:
             content_len = jsonheader["content-length"]

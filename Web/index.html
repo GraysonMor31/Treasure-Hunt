@@ -173,7 +173,8 @@
         let currentTurn = null;
         let players = [];
         let gameOver = false;
-    
+        let ws;
+
         // Function to set up the board and initialize player position
         function setupGame() {
             document.addEventListener("DOMContentLoaded", function() {
@@ -193,9 +194,55 @@
     
                 // Initial player position
                 updatePlayerPosition(currentPlayerPosition.row, currentPlayerPosition.col);
+
+                // Initialize WebSocket connection
+                ws = new WebSocket(`ws://${window.location.hostname}:3003`);
+                ws.onmessage = function(event) {
+                    const message = JSON.parse(event.data);
+                    handleServerMessage(message);
+                };
             });
         }
-    
+
+        // Function to handle messages from the server
+        function handleServerMessage(message) {
+            if (message.action === "state_update") {
+                updateGameState(message.state);
+            } else if (message.action === "chat") {
+                displayChatMessage(message.player_name, message.message);
+            }
+        }
+
+        // Function to update the game state
+        function updateGameState(state) {
+            players = state.players;
+            currentTurn = state.current_turn;
+            gameOver = state.game_over;
+
+            // Update player positions on the board
+            players.forEach(player => {
+                const { name, position } = player;
+                const cell = document.getElementById(`cell-${position.row}-${position.col}`);
+                if (cell) {
+                    cell.textContent = name.charAt(0); // Display the first letter of the player's name
+                }
+            });
+
+            // Update game info
+            document.querySelector(".game-info p:nth-child(2)").textContent = `Players: ${players.map(p => p.name).join(", ")}`;
+            document.querySelector(".game-info p:nth-child(3)").textContent = `Turn: ${currentTurn}`;
+            document.querySelector(".game-info p:nth-child(4)").textContent = `Winner: ${state.winner || "None"}`;
+        }
+
+        // Function to display chat messages
+        function displayChatMessage(player_name, message) {
+            const chatMessages = document.querySelector(".chat-messages");
+            const messageElement = document.createElement("p");
+            messageElement.textContent = `${player_name}: ${message}`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
         // Function to update the player position on the board
         function updatePlayerPosition(newRow, newCol) {
             // Clear previous position
@@ -253,11 +300,7 @@
             const input = document.getElementById("chat-input");
             const message = input.value;
             if (message) {
-                const chatMessages = document.querySelector(".chat-messages");
-                const messageElement = document.createElement("p");
-                messageElement.textContent = `You: ${message}`;
-                chatMessages.appendChild(messageElement);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                displayChatMessage("You", message);
     
                 // Send message to server
                 sendChatMessage(message);
@@ -267,19 +310,37 @@
         }
     
         function sendChatMessage(message) {
-            // Example function to send chat message to server
-            console.log(`Sending message to server: ${message}`);
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const chatMessage = {
+                    action: "chat",
+                    player_name: "You", // Replace with actual player name
+                    message: message
+                };
+                ws.send(JSON.stringify(chatMessage));
+            }
         }
     
-        // Send move to server (Placeholder function)
+        // Send move to server
         function sendMove(row, col) {
-            console.log(`Sending move to server: Row ${row}, Col ${col}`);
-            // Actual server communication goes here
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const moveMessage = {
+                    action: "move",
+                    player_name: "You", // Replace with actual player name
+                    position: { row, col }
+                };
+                ws.send(JSON.stringify(moveMessage));
+            }
         }
     
         // Function to handle leaving the game
         function leaveGame() {
-            // Example function to notify server and leave game
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const leaveMessage = {
+                    action: "leave_game",
+                    player_name: "You" // Replace with actual player name
+                };
+                ws.send(JSON.stringify(leaveMessage));
+            }
             console.log("Player is leaving the game");
             alert("You have left the game.");
             window.location.reload(); // Refresh the page or redirect as needed
