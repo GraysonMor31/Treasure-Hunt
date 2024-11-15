@@ -11,7 +11,10 @@
 |-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|-----------------------|
 
 ## Intro
-This is a simple strategy based game that includes elements of Chess and a Choose your Own Adventure RPG. The objective is simple be the first to find the treasure hidden on the map, but be warned there is more to it than just moving in straight lines. Think out your moves, predict other players moves, and use anything available to you to achieve victory (kill/hurt each-other). The game utilizes socket programming in Python to allow for multiplayer capabilities this includes playing with others, a broadcast based game chat, and more. The game is played through a locally hosted web-page (Don't worry the code and server will handle all of that). You play by selecting the movement buttons corresponding to the way you wish to move.
+This is a simple strategy based game that includes elements of Chess and a Choose your Own Adventure RPG. The objective is simple be the first to find the treasure hidden on the map, but be warned there is more to it than just moving in straight lines. Think out your moves, predict other players moves, and use anything available to you to achieve victory (kill/hurt each-other). The game utilizes socket programming in Python to allow for multiplayer capabilities this includes playing with others, a broadcast based game chat, and more. The game is played through a locally ran terminal instance on each players machine. (Don't worry the code and server will handle all of that). You play by either selecting move or attack. To move, type "move <direction>" in to the CLI/terminal, directions in include N/S/E/W/NE/NW/SE/SW and work just like a compass on a map, N (North) is up, S (South) is down, and so forth (really playing into this whole pirate thing.
+
+**NOTE: ** The game was far more involved than this, due to time constraints we took the idea and reduced what were planning to do, we had originally wanted to use a web based interface. JavaSccript proved to be a massive pain to work with and get to play nicely with Flask. We scrapped that idea and are going in a new direction with this using a terminal or CLI style GUI. This simplified our game as a whole and is better for us. Thanks for understanding.
+
 ## How To
 ### Prerequisites
 * Compliant OS
@@ -30,7 +33,6 @@ git clone https://github.com/GraysonMor31/Treasure-Hunt.git
 ```bash
 pip install -r requirements.txt
 ```
-3. 
 ### Run
 1. Start the server
 ```bash
@@ -40,20 +42,15 @@ python3 server.py -p <port>
 * The server IP is hard-coded to 0.0.0.0
 2. Start each client
 ```bash
-python3 client.py -i <host-ip-address> -p <port> <action> <value>
+python3 client.py -i <host-ip-address> -p <port> -u <username>
 ```
-3. A webpage with the address ```http://0.0.0.0:3003``` should open using your systems default browsers
-* NOTE: We are assuming this port is open on your system adn is hard coded, its not commonly used so it should be, but if its not, you may need to determine what is running on that port and stop it or, change the port in the code.
-4. For our current message protocol, our 2 current actions are join_game and leave_game. Here is an example for running the client code:
-```bash
-python3 client.py -i 0.0.0.0 -p 12345 join_game username
-```
+* The IP Host Address is the IP of the server and the port is the same port specified in the server start command
 
 ### Play (UNDER CONSTRUCTION)
-* Use mouse to click on desired square to move to
-* You are denoted by a colored dot, your dot will appear in the upper right hand corner of the web-page
-* The "treasure" randomly spawns each game (don't do the same path twice...it won't work)
-
+* Enter a command when prompted M for Move and A for attack
+* Then based on the pervious input enter a direction or a numer of a player to attack
+* Keep moving around the grid until the treasure is found
+  
 ## Rules
 1. You can only move 1 square per turn
 2. You can only move in straight lines (up, down, left, right, diaganol)
@@ -65,11 +62,10 @@ python3 client.py -i 0.0.0.0 -p 12345 join_game username
 
 ## Technologies Used
 * Python
-* HTML, CSS, JavaScript
 * Sockets
-* HTTP Servers
-* HTTP Requests
-* Local Web Severs
+* JSON
+* IP Addresses
+* CLI
 * Git
 
 ## Progress
@@ -96,9 +92,7 @@ python3 client.py -i 0.0.0.0 -p 12345 join_game username
     * [Struct](https://docs.python.org/3/library/struct.html)
     * [OS](https://docs.python.org/3/library/os.html)
     * [Sys](https://docs.python.org/3/library/sys.html)
-    * [HTTP Servers](https://docs.python.org/3/library/http.server.html)
     * [Unit Tests](https://docs.python.org/3/library/unittest.html)
-    * [Flask](https://flask.palletsprojects.com/en/stable/installation/#python-version)
 
 3. Code Docs
     * [Server]()
