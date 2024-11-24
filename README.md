@@ -29,9 +29,17 @@ This is a simple strategy based game that includes elements of Chess and a Choos
 ```bash
 git clone https://github.com/GraysonMor31/Treasure-Hunt.git
 ```
-2. Install Dependancies using PIP
+2. Change Directories to "Treasure-Hunt"
+```bash
+cd Teasure-Hunt
+```
+3. Install Dependancies using PIP
 ```bash
 pip install -r requirements.txt
+```
+4. Change Directories to Networking
+```bash
+cd Networking
 ```
 ### Run
 1. Start the server
@@ -39,7 +47,7 @@ pip install -r requirements.txt
 python3 server.py -p <port>
 ```
 * The port can be any value > 1023 and < 65535
-* The server IP is hard-coded to 0.0.0.0
+* The server IP is hard-coded to 0.0.0.0 (Listen on all)
 2. Start each client
 ```bash
 python3 client.py -i <host-ip-address> -p <port> -u <username>
