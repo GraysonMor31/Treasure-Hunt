@@ -2,6 +2,10 @@ import argparse
 import socket
 import logging
 import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
+
 from protocol import Protocol
 
 # Set up logging for debug, info, error, and critical messages

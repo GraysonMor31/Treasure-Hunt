@@ -3,6 +3,11 @@ import selectors
 import socket
 import logging
 import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Game'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
+
 from game import GameState
 from protocol import Protocol
 
