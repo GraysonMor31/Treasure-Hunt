@@ -91,9 +91,20 @@ python3 client.py -i <host-ip-address> -p <port> -u <username>
   * **Coming Soon**
  
 ## Future Roadmap
-1. Webserver
+1. Webserver/GUI
    * Impliment a web interface using Flask routines
-2. 
+   * Integrate JavaScript for dynamic client-side interactions and updates
+2. Enhanced Game Features:
+   * Add visual elements like a graphical grid to represent the game board.
+   * Include animations for player moves and attacks.
+3. AI Opponent:
+   * Develop a basic AI to allow single-player mode against the computer.
+4. Expanded Networking:
+   * Implement NAT traversal for seamless connections over the internet.
+   * Add support for secure communication using TLS encryption.
+5. Game Modes and Mechanics:
+   * Introduce alternative game modes (e.g., team-based treasure hunts).
+   * Add power-ups and environmental challenges like traps or obstacles.
 
 ## Retrospective
  
