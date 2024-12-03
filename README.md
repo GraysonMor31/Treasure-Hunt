@@ -7,8 +7,8 @@
 
 ## Table of Contents
  
-| [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Progress](#Progress) | [Additional Resources](#Additional-Resources) | [Documentation](#Documentation) |
-|-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|-----------------------|
+| [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Progress](#Progress) | [Additional Resources](#Additional-Resources) | [Future Roadmap](#Future-Roadmap)| [Retrospective](#Retrospective) |[Documentation](#Documentation) |
+|-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|-----------------------|------------------|------------------|
 
 ## Intro
 This is a simple strategy based game that includes elements of Chess and a Choose your Own Adventure RPG. The objective is simple be the first to find the treasure hidden on the map, but be warned there is more to it than just moving in straight lines. Think out your moves, predict other players moves, and use anything available to you to achieve victory (kill/hurt each-other). The game utilizes socket programming in Python to allow for multiplayer capabilities this includes playing with others, a broadcast based game chat, and more. The game is played through a locally ran terminal instance on each players machine. (Don't worry the code and server will handle all of that). You play by either selecting move or attack. To move, type "move <direction>" in to the CLI/terminal, directions in include N/S/E/W/NE/NW/SE/SW and work just like a compass on a map, N (North) is up, S (South) is down, and so forth (really playing into this whole pirate thing.
@@ -83,11 +83,19 @@ python3 client.py -i <host-ip-address> -p <port> -u <username>
 | 1 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 - Backlog: Updated |
 | 2 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 - Backlog: Updated |
 | 3 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 1 - Backlog: Updated |
-| 4 | :construction: | Spring Upcoming - Tasks Planned: 8 - Tasks In Progess: 2 |
+| 4 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 1 - Backlog: updated |
+| 5 | :building_construction: | Tasks Planned: 4 - Tasks In Progress: 2 |
 
 ## Additional Resources
 * Installation and Setup Video
   * **Coming Soon**
+ 
+## Future Roadmap
+1. Webserver
+   * Impliment a web interface using Flask routines
+2. 
+
+## Retrospective
  
 ## Documentation
 1. Team Docs
