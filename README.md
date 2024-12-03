@@ -107,6 +107,12 @@ python3 client.py -i <host-ip-address> -p <port> -u <username>
    * Add power-ups and environmental challenges like traps or obstacles.
 
 ## Retrospective
+### Accomplishments:
+We successfully implemented a working multiplayer game using Python sockets. However, due to constrained deadlines we had to simplify the game's mechanics and interface to meet project requirements. This obviously is a let down but better than not having a working project. This taught us as a group about valuable lessons in managing scope and adapting to challenges on the fly. As well as not getting to ambistious and setting realistic goals when formulating the project.
+### Challenges:
+Like previously mentioned we faced issues with the game interface being in a webserver. The biggest issue we faced was getting the TCP (socket) server to interact and send data to the the Web server. We are not entirely sure why this was as we did not have a ton of time to debug the issues, but we believe the issue had to do with our JavaScript functions and how it was making "on-click" calls back to the TCP server to recieve the data. We also faced a few issues when rescoping the projet since we started from scratch halfway through the semester. This decision put a lot of stress on us as a team, but was worth it since we got a decent final product.
+### Teamwork:
+We collaborated effectively to divide tasks and meet sprint goals. We were diligent about creating and assigning tasks to be done through our project's Kanban board. This ensured that progress was tracked and issues were promptly addressed. This also allowed us to document progress and bugs.
  
 ## Documentation
 1. Team Docs
