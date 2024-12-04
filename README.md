@@ -50,7 +50,7 @@ python3 server.py -p <port>
 * The server IP is hard-coded to 0.0.0.0 (Listen on all)
 2. Start each client
 ```bash
-python3 client.py -i <host-ip-address> -p <port> -u <username>
+python3 client.py -i <host-ip-address> -p <port> 
 ```
 * The IP Host Address is the IP of the server and the port is the same port specified in the server start command
 
