@@ -48,9 +48,6 @@ class Server:
         # Send initial game state to the new player
         self.send_game_state(conn)
 
-        # After a new player joins, send game state to all connected players
-        self.send_game_state_to_all()
-
     def reset_game(self):
         self.game = GameState()
         self.player_count = 0
@@ -151,7 +148,7 @@ class Server:
 
 def main():
     parser = argparse.ArgumentParser(description="Start the game server.")
-    parser.add_argument("-i", "--ip", type=str, default="127.0.0.1", help="IP address to bind the server")
+    parser.add_argument("-i", "--ip", type=str, default="0.0.0.0", help="IP address to bind the server")
     parser.add_argument("-p", "--port", type=int, required=True, help="Port to bind the server")
     args = parser.parse_args()
 
