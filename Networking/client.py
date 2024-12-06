@@ -4,6 +4,7 @@ import logging
 import sys
 import os
 import threading
+import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
 
@@ -20,6 +21,7 @@ class Client:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.running = True  # Flag to control the listener thread
         self.buffer = b""    # Buffer to handle partial message reads
+        self.game_state = None  # Hold the current game state
 
     def connect_to_server(self):
         try:
@@ -82,32 +84,41 @@ class Client:
     def handle_server_message(self, content):
         action = content.get("action")
         if action == "update":
-            self.display_game_state(content["game_state"])
+            self.game_state = content["game_state"]  # Update the game state
+            self.display_game_state()
         else:
             log.warning(f"Unknown action received: {action}")
 
-    def display_game_state(self, game_state):
+    def display_game_state(self):
+        if not self.game_state:
+            return
+
         grid_size = 10
         grid = [["." for _ in range(grid_size)] for _ in range(grid_size)]
 
-        for player, info in game_state["players"].items():
+        for player, info in self.game_state["players"].items():
             x, y = info["position"]
             grid[y][x] = "P"
 
-        tx, ty = game_state["treasure"]
+        tx, ty = self.game_state["treasure"]
         grid[ty][tx] = "T"
 
         print("\nCurrent Game State:")
         for row in grid:
             print(" ".join(row))
         print("\nPlayers:")
-        for player, info in game_state["players"].items():
+        for player, info in self.game_state["players"].items():
             print(f"{player}: Position {info['position']}, Health {info['health']}")
-        print(f"Treasure: Position {game_state['treasure']}")
+        print(f"Treasure: Position {self.game_state['treasure']}")
 
-        if game_state["game_over"]:
-            print(f"\nGame Over! {game_state['winner']} wins the game!")
+        if self.game_state["game_over"]:
+            print(f"\nGame Over! {self.game_state['winner']} wins the game!")
             self.prompt_for_replay()
+        else:
+            self.prompt_for_action()
+
+    def prompt_for_action(self):
+        print("Enter action (move/attack/quit): ", end="", flush=True)
 
     def prompt_for_replay(self):
         replay = input("Do you want to play again? (yes/no): ").strip()
@@ -122,7 +133,7 @@ class Client:
         """ Main loop for user interaction """
         try:
             while self.running:
-                action = input("Enter action (move/attack/quit): ").strip()
+                action = input().strip()  # Block until the user enters an action
                 if action == "quit":
                     self.send_action("quit")
                     self.running = False
