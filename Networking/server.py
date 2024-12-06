@@ -44,7 +44,11 @@ class Server:
         self.game.add_player(player_name)
         self.player_connections[conn] = player_name
         log.info(f"{player_name} has joined the game")
-        self.send_game_state(conn)  # Send initial game state to the new client
+        
+        # Send initial game state to the new player
+        self.send_game_state(conn)
+
+        # After a new player joins, send game state to all connected players
         self.send_game_state_to_all()
 
     def reset_game(self):
@@ -106,8 +110,9 @@ class Server:
         encoded_message = Protocol.encode_message(message)
         try:
             conn.sendall(encoded_message)
+            log.debug(f"Sent game state to {self.player_connections[conn]}")
         except Exception as e:
-            log.error(f"Error sending game state to client: {e}")
+            log.error(f"Error sending game state to {self.player_connections[conn]}: {e}")
             self.disconnect_client(conn)
 
     def send_game_state_to_all(self):
@@ -115,51 +120,43 @@ class Server:
         message = {"action": "update", "game_state": game_state}
         self.send_to_all(message)
 
+    def send_to_all(self, message):
+        for conn in self.player_connections:
+            try:
+                encoded_message = Protocol.encode_message(message)
+                conn.sendall(encoded_message)
+                log.debug(f"Sent message to {self.player_connections[conn]}")
+            except Exception as e:
+                log.error(f"Error sending message to {self.player_connections[conn]}: {e}")
+                self.disconnect_client(conn)
+
     def disconnect_client(self, conn):
-        log.info("Client disconnected")
+        player_name = self.player_connections.pop(conn, None)
+        if player_name:
+            log.info(f"{player_name} disconnected.")
         self.sel.unregister(conn)
         conn.close()
-        if conn in self.player_connections:
-            del self.player_connections[conn]
 
-    def send_to_all(self, message):
-        encoded_message = Protocol.encode_message(message)
-        for key in self.sel.get_map().values():
-            if isinstance(key.fileobj, socket.socket) and key.fileobj != self.server_socket:
-                try:
-                    key.fileobj.sendall(encoded_message)
-                except Exception as e:
-                    log.error(f"Error sending message to client: {e}")
-                    self.sel.unregister(key.fileobj)
-                    key.fileobj.close()
-
-    def event_loop(self):
-        while True:
-            events = self.sel.select(timeout=1)
-            for key, mask in events:
-                callback = key.data
-                try:
-                    callback(key.fileobj, mask)
-                except Exception as e:
-                    log.error(f"Error in event loop: {e}")
-                    self.sel.unregister(key.fileobj)
-                    key.fileobj.close()
-
-    def start(self):
+    def run(self):
         try:
-            self.event_loop()
+            while True:
+                events = self.sel.select()
+                for key, mask in events:
+                    callback = key.data
+                    callback(key.fileobj, mask)
         except KeyboardInterrupt:
-            log.info("Server shutdown")
+            log.info("Server shutting down.")
+        finally:
             self.server_socket.close()
-            self.sel.close()
 
 def main():
     parser = argparse.ArgumentParser(description="Start the game server.")
-    parser.add_argument("-p", "--port", type=int, required=True, help="Port for the server to listen on")
+    parser.add_argument("-i", "--ip", type=str, default="127.0.0.1", help="IP address to bind the server")
+    parser.add_argument("-p", "--port", type=int, required=True, help="Port to bind the server")
     args = parser.parse_args()
 
-    server = Server("0.0.0.0", args.port)
-    server.start()
+    server = Server(args.ip, args.port)
+    server.run()
 
 if __name__ == "__main__":
     main()
