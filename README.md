@@ -59,6 +59,7 @@ python3 client.py -i <host-ip-address> -p <port>
 * Then based on the pervious input enter a direction or a number of a player to attack (this is like a compass where **N** is **UP**, **S** is **DOWN**, **E** is right, and so on and so forth, you can choose any major cardinal direction N, S, E, W, NW, SW, NE, SE (the direction **MUST** be CAPITALIZED like prompted)
 * Keep moving around the grid until the treasure is found
 * Once a player wins the game you will be prompted if you want to play again (yes/no) select what you wanna do and have at it
+* *NOTE:* If a player joins after the first player the first players game board wont update until they have made their move this is due to how the server is storing the game state. After the first move both players will be synced, this will also be true for the four players
   
 ## Rules
 1. You can only move 1 square per turn
@@ -130,11 +131,10 @@ We collaborated effectively to divide tasks and meet sprint goals. We were dilig
     * [Unit Tests](https://docs.python.org/3/library/unittest.html)
 
 3. Code Docs
-    * [Server](https://github.com/GraysonMor31/Treasure-Hunt/edit/main/README.md)
-    * [Client]()
-    * [Game Server]()
-    * [Game Client]()
-    * [Game State]()
-    * [Web Server]()
-    * [Index]()
+    * [Server](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Server.md)
+    * [Client](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Client.md)
+    * [Game](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Game.md)
+    * [Utils](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Utils.md)
+    * [Protocol](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Protocol.md)
+    
   
