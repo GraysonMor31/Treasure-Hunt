@@ -54,19 +54,19 @@ python3 client.py -i <host-ip-address> -p <port>
 ```
 * The IP Host Address is the IP of the server and the port is the same port specified in the server start command
 
-### Play (UNDER CONSTRUCTION)
-* Enter a command when prompted M for Move and A for attack
-* Then based on the pervious input enter a direction or a numer of a player to attack
+### Play
+* Enter a command when prompted move to move your player or attack to attack another player, or quit to quit the game
+* Then based on the pervious input enter a direction or a number of a player to attack (this is like a compass where **N** is **UP**, **S** is **DOWN**, **E** is right, and so on and so forth, you can choose any major cardinal direction N, S, E, W, NW, SW, NE, SE (the direction **MUST** be CAPITALIZED like prompted)
 * Keep moving around the grid until the treasure is found
+* Once a player wins the game you will be prompted if you want to play again (yes/no) select what you wanna do and have at it
   
 ## Rules
 1. You can only move 1 square per turn
-2. You can only move in straight lines (up, down, left, right, diaganol)
+2. You can only move in straight lines (up, down, left, right, diaganols)
 3. You can not move to a square another player is already on
 4. Players may choose to attack other players if their squares is immediately adjacent to each other (left, right, top, bottom), an attack counts as your turn
 5. If attacked 2 times the player dies (Is out of that game)
-6. If attacked once, that player will lose a turn
-7. First to find the "Treasure" wins
+6. First to find the "Treasure" wins
 
 ## Technologies Used
 * Python
@@ -84,10 +84,12 @@ python3 client.py -i <host-ip-address> -p <port>
 | 2 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 0 - Backlog: Updated |
 | 3 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 1 - Backlog: Updated |
 | 4 | :white_check_mark: | Sprint Successfully Completed - Tasks Missed: 1 - Backlog: updated |
-| 5 | :building_construction: | Tasks Planned: 4 - Tasks In Progress: 2 |
+| 5 | :building_construction: | Tasks Planned: 6 - Tasks In Progress: 2 |
 
 ## Additional Resources
 * Installation and Setup Video
+  * **Coming Soon**
+* Game Play Video
   * **Coming Soon**
  
 ## Future Roadmap
@@ -128,7 +130,7 @@ We collaborated effectively to divide tasks and meet sprint goals. We were dilig
     * [Unit Tests](https://docs.python.org/3/library/unittest.html)
 
 3. Code Docs
-    * [Server]()
+    * [Server](https://github.com/GraysonMor31/Treasure-Hunt/edit/main/README.md)
     * [Client]()
     * [Game Server]()
     * [Game Client]()
