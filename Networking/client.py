@@ -54,8 +54,7 @@ class Client:
                 data = self.sock.recv(4096)  # Receive data from the server
                 if data:
                     self.buffer += data  # Append to the buffer
-                    log.debug(f"Received data: {data[:50]}...")  # Debugging partial data
-
+                    
                     while Protocol.message_complete(self.buffer):
                         # Process complete message
                         jsonheader, header_len = Protocol.decode_header(self.buffer)
