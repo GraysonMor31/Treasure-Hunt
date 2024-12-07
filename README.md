@@ -122,6 +122,14 @@ We collaborated effectively to divide tasks and meet sprint goals. We were dilig
 
 
 ## Vulnerabilities
+1. Potential Denial of Service (DoS)
+  * On the server side can have a potential Denial of Service, if the client requests multiply like moving or attacking. 
+3. Race Conditions in Multithreading
+  * For the client side, if the mian thread and listener thread are tying to update at the same time for the game state which would cause a race conditions. 
+5. Potential Buffer Overflow With Malformed Data
+  * The server may crash or become unresponsive if the client sends excessively large packets, a there is currently no robust validation in place to detect malfromed messages before they are processed. 
+7. unencrypted Communication
+  * On the server side, it used raw TCP sockets, this mean TCP sockets communication is sent plaintext, which can cause manipulation. 
 
 
 ## Documentation
