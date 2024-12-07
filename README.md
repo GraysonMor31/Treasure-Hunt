@@ -7,8 +7,8 @@
 
 ## Table of Contents
  
-| [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Progress](#Progress) | [Additional Resources](#Additional-Resources) | [Future Roadmap](#Future-Roadmap)| [Retrospective](#Retrospective) |[Documentation](#Documentation) |
-|-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|-----------------------|------------------|------------------|
+| [Intro](#Intro) | [How To](#How-To) | [Rules](#Rules) | [Technologies Used](#Technologies-Used) | [Progress](#Progress) | [Additional Resources](#Additional-Resources) | [Future Roadmap](#Future-Roadmap)| [Retrospective](#Retrospective) | [Vulnerabilities](#Vulnerabilities) |[Documentation](#Documentation) |
+|-----------------|-------------------|-----------------|-----------------------------------------|-----------------------------------------------|-----------------------|-----------------------|------------------|------------------|------------------------|
 
 ## Intro
 This is a simple strategy based game that includes elements of Chess and a Choose your Own Adventure RPG. The objective is simple be the first to find the treasure hidden on the map, but be warned there is more to it than just moving in straight lines. Think out your moves, predict other players moves, and use anything available to you to achieve victory (kill/hurt each-other). The game utilizes socket programming in Python to allow for multiplayer capabilities this includes playing with others, a broadcast based game chat, and more. The game is played through a locally ran terminal instance on each players machine. (Don't worry the code and server will handle all of that). You play by either selecting move or attack. To move, type "move <direction>" in to the CLI/terminal, directions in include N/S/E/W/NE/NW/SE/SW and work just like a compass on a map, N (North) is up, S (South) is down, and so forth (really playing into this whole pirate thing.
@@ -96,8 +96,6 @@ https://github.com/user-attachments/assets/4534fea1-c21a-43e6-9ab2-69e60d7e36c5
 
 https://github.com/user-attachments/assets/6f0450ed-8271-4b3b-92ae-5ed2a111cf84
 
-
- 
 ## Future Roadmap
 1. Webserver/GUI
    * Impliment a web interface using Flask routines
@@ -121,7 +119,11 @@ We successfully implemented a working multiplayer game using Python sockets. How
 Like previously mentioned we faced issues with the game interface being in a webserver. The biggest issue we faced was getting the TCP (socket) server to interact and send data to the the Web server. We are not entirely sure why this was as we did not have a ton of time to debug the issues, but we believe the issue had to do with our JavaScript functions and how it was making "on-click" calls back to the TCP server to recieve the data. We also faced a few issues when rescoping the projet since we started from scratch halfway through the semester. This decision put a lot of stress on us as a team, but was worth it since we got a decent final product.
 ### Teamwork:
 We collaborated effectively to divide tasks and meet sprint goals. We were diligent about creating and assigning tasks to be done through our project's Kanban board. This ensured that progress was tracked and issues were promptly addressed. This also allowed us to document progress and bugs.
- 
+
+
+## Vulnerabilities
+
+
 ## Documentation
 1. Team Docs
     * [Statement of Work](https://github.com/GraysonMor31/Treasure-Hunt/blob/main/Documentation/Statement%20of%20Work.pdf)
