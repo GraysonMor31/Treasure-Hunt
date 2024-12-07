@@ -34,7 +34,7 @@ class TestClient(unittest.TestCase):
     def test_display_game_state(self):
         self.client.game_state = {"players": {"Player 1": {"position": (0, 0), "health": 100}}, "treasure": (1, 1), "game_over": False}
         self.client.display_game_state()
-        # Check if the game state is displayed correctly (this is more of a visual check)
+        
 
     @patch('builtins.input', side_effect=['yes'])
     def test_prompt_for_replay_yes(self, mock_input):
