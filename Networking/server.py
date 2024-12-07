@@ -5,6 +5,7 @@ import logging
 import sys
 import os
 
+# append paths for the "game" and "protocol" modules
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Game'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
 
@@ -26,6 +27,7 @@ class Server:
         self.player_count = 0
         self.player_connections = {}
 
+    # Creating and set up the server socket
     def create_server_socket(self):
         try:
             # Create a TCP/IP socket, host will always listen on all interfaces, user will set the port when they start the game
@@ -41,6 +43,7 @@ class Server:
             log.error(f"Failed to create server socket: {e}")
             sys.exit(1) # Exit the program if there is a failure
 
+    # Handle new inciming client connections 
     def accept_connection(self, server_socket, mask):
         try:
             conn, addr = server_socket.accept()  # Accept the client 
@@ -64,12 +67,14 @@ class Server:
         except socket.error as e:
             log.error(f"Error accepting connection: {e}, closing server.")
 
+    # reset the game state and add players back 
     def reset_game(self):
         self.game = GameState()
         log.info("Game has been reset")
         for player in self.player_connections.values():
             self.game.add_player(player)
 
+    # handle client messages, including moves, attacks, and other actions 
     def handle_client(self, conn, mask):
         try:
             data = conn.recv(8192) # Receive data from the client in 8192 byte chunks
@@ -99,6 +104,7 @@ class Server:
             log.error(f"Error handling client: {e}")
             self.disconnect_client(conn)
 
+    # handle player movment 
     def handle_move(self, conn, content):
         try:
             player_name = self.player_connections[conn]
@@ -116,6 +122,7 @@ class Server:
         except KeyError as e:
             log.error(f"Error handling move: {e}, should be 'N', 'S', 'E', 'W', 'NE', 'NW', 'SE', or 'SW'")
 
+    # handle player attacks
     def handle_attack(self, conn, content):
         try:
             player_name = self.player_connections[conn]
@@ -127,6 +134,7 @@ class Server:
         except KeyError as e:
             log.error(f"Error handling attack: {e}, should be a valid player name, i.e. 'Player 1'")
 
+    # current game state to a specific player 
     def send_game_state(self, conn):
         try:
             game_state = self.game.get_game_state()
@@ -140,11 +148,13 @@ class Server:
             log.error(f"Error sending game state to {self.player_connections.get(conn, 'unknown')}: {e}")
             self.disconnect_client(conn)
 
+    # sent the current game state to all players
     def send_game_state_to_all(self):
         game_state = self.game.get_game_state()
         message = {"action": "update", "game_state": game_state}
         self.send_to_all(message)
 
+    # send a message to all player 
     def send_to_all(self, message):
         for conn in list(self.player_connections):
             try:
@@ -157,6 +167,7 @@ class Server:
                 log.error(f"Error sending message to {self.player_connections.get(conn, 'unknown')}: {e}")
                 self.disconnect_client(conn)
 
+    # disconnect a cluent and clean up 
     def disconnect_client(self, conn):
         player_name = self.player_connections.pop(conn, None)
         if player_name:
@@ -168,6 +179,7 @@ class Server:
         except socket.error as e:
             log.error(f"Error disconnecting client: {e}")
 
+    # run the server and handle incoming connection 
     def run(self):
         try:
             while True:
@@ -182,6 +194,7 @@ class Server:
         finally:
             self.server_socket.close() # Close the server socket
 
+# main funcion to start the server
 def main():
     parser = argparse.ArgumentParser(description="Start the game server.")
     parser.add_argument("-i", "--ip", type=str, default="0.0.0.0", help="IP address to bind the server")
