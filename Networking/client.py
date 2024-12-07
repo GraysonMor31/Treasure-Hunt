@@ -5,6 +5,7 @@ import sys
 import os
 import threading
 
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
 
 from protocol import Protocol
@@ -12,6 +13,7 @@ from protocol import Protocol
 # Set up logging for debug, info, error, and critical messages
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
+
 
 class Client:
     def __init__(self, server_ip, server_port):
@@ -22,8 +24,10 @@ class Client:
         self.buffer = b""    # Buffer to handle partial message reads
         self.game_state = None  # Hold the current game state
 
+# connect to the server and start listening for updates 
     def connect_to_server(self):
         try:
+            # attempt to connect to the specified server
             self.sock.connect((self.server_ip, self.server_port))
             log.info(f"Connected to server at {self.server_ip}:{self.server_port}")
             self.send_join_request()
@@ -34,15 +38,18 @@ class Client:
             log.error(f"Error connecting to server: {e}")
             sys.exit(1)
 
+    # send a "join" request to the server
     def send_join_request(self):
         message = {"action": "join"}
         self.sock.sendall(Protocol.encode_message(message))
 
+    # send a specified action to the server like move and attack
     def send_action(self, action, target=None):
         message = {"action": action}
         if target:
             message["target"] = target
         try:
+            # attempt to send the action to the server
             self.sock.sendall(Protocol.encode_message(message))
         except Exception as e:
             log.error(f"Error sending action to server: {e}")
@@ -71,6 +78,7 @@ class Client:
                         self.buffer = self.buffer[message_len:]
 
                 else:
+                    # if no data is received, the server might have disconnected 
                     log.info("Server disconnected")
                     self.running = False
                     self.sock.close()
@@ -80,6 +88,7 @@ class Client:
                 self.running = False
                 self.sock.close()
 
+    # handle server message like game state updates
     def handle_server_message(self, content):
         action = content.get("action")
         if action == "update":
@@ -88,6 +97,7 @@ class Client:
         else:
             log.warning(f"Unknown action received: {action}")
 
+    # display the curretnt game state to the user
     def display_game_state(self):
         if not self.game_state:
             return
@@ -95,10 +105,12 @@ class Client:
         grid_size = 10
         grid = [["." for _ in range(grid_size)] for _ in range(grid_size)]
 
+        # place players on the grid based on their postions 
         for player, info in self.game_state["players"].items():
             x, y = info["position"]
             grid[y][x] = "P"
 
+        # place treasure on the gride 
         tx, ty = self.game_state["treasure"]
         grid[ty][tx] = "T"
 
@@ -110,6 +122,7 @@ class Client:
             print(f"{player}: Position {info['position']}, Health {info['health']}")
         print(f"Treasure: Position {self.game_state['treasure']}")
 
+        # if the game is over, display the winner and prompt for replay 
         if self.game_state["game_over"]:
             print(f"\nGame Over! {self.game_state['winner']} wins the game!")
             self.prompt_for_replay()
@@ -151,12 +164,14 @@ class Client:
             self.running = False
             self.sock.close()
 
+# main function to start the client and handle command-line arguments
 def main():
     parser = argparse.ArgumentParser(description="Connect to the game server.")
     parser.add_argument("-i", "--ip", type=str, required=True, help="IP address of the server")
     parser.add_argument("-p", "--port", type=int, required=True, help="Port of the server")
     args = parser.parse_args()
 
+    # create a client object and connect to the server
     client = Client(args.ip, args.port)
     client.connect_to_server()
     client.run()
