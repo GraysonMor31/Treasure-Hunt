@@ -1,5 +1,4 @@
 import random
-import logging
 from collections import defaultdict
 
 class GameState:
