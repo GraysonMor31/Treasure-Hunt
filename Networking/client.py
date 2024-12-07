@@ -4,7 +4,6 @@ import logging
 import sys
 import os
 import threading
-import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
 
