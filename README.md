@@ -88,10 +88,15 @@ python3 client.py -i <host-ip-address> -p <port>
 | 5 | :building_construction: | Tasks Planned: 6 - Tasks In Progress: 2 |
 
 ## Additional Resources
-* Installation and Setup Video
-  * **Coming Soon**
-* Game Play Video
-  * **Coming Soon**
+### Install and Setup
+
+https://github.com/user-attachments/assets/4534fea1-c21a-43e6-9ab2-69e60d7e36c5
+
+### Game Play Demo
+
+https://github.com/user-attachments/assets/6f0450ed-8271-4b3b-92ae-5ed2a111cf84
+
+
  
 ## Future Roadmap
 1. Webserver/GUI
