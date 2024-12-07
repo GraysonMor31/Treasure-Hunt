@@ -4,7 +4,6 @@ import logging
 import sys
 import os
 import threading
-import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Protocol'))
 
@@ -121,13 +120,16 @@ class Client:
         print("Enter action (move/attack/quit): ", end="", flush=True)
 
     def prompt_for_replay(self):
-        replay = input("Do you want to play again? (yes/no): ").strip()
+        replay = input("Do you want to play again? (yes/no): ").strip().lower()
         if replay == "no":
             self.running = False
             self.sock.close()
             sys.exit(0)
-        else:
+        elif replay == "yes":
             self.send_action("replay")
+        else:
+            print("Invalid input. Please enter 'yes' or 'no'.")
+            self.prompt_for_replay()
 
     def run(self):
         """ Main loop for user interaction """
